@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Search and explore clinical trials from ClinicalTrials.gov." />
+    <meta name="description" content="Search and explore clinical trials from ClinicalTrials.gov and PACTR Africa registry data." />
     <title>TrialScope | Clinical trial search</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,7 +13,10 @@
   <body>
     <header class="site-header">
       <a class="brand" href="./" aria-label="TrialScope home"><span class="brand-mark">+</span><span>Trial<span class="brand-accent">Scope</span></span></a>
-      <span class="source-label">Powered by ClinicalTrials.gov</span>
+      <nav class="header-actions" aria-label="Registry links">
+        <a href="https://clinicaltrials.gov/" target="_blank" rel="noreferrer">ClinicalTrials.gov</a>
+        <a href="https://pactr.samrc.ac.za/GIS_Viewer.aspx" target="_blank" rel="noreferrer">PACTR Africa</a>
+      </nav>
     </header>
 
     <main>
@@ -21,18 +24,33 @@
         <div class="hero-copy">
           <p class="eyebrow">Clinical research, made clearer</p>
           <h1>Find trials that move <em>health</em> forward.</h1>
-          <p class="hero-text">Explore registered clinical studies from around the world. Search by condition, treatment, location, or study ID.</p>
+          <p class="hero-text">Explore registered clinical studies from around the world and Africa. Search by condition, treatment, location, or study ID.</p>
         </div>
         <form id="search-form" class="search-panel">
           <label for="search-input">What are you looking for?</label>
           <div class="search-row">
-            <input id="search-input" type="search" placeholder="e.g. diabetes, breast cancer, NCT045..." autocomplete="off" />
+            <input id="search-input" type="search" placeholder="e.g. diabetes, breast cancer, NCT045..., Africa" autocomplete="off" />
             <button type="submit"><span>Search trials</span><span aria-hidden="true">→</span></button>
           </div>
           <div class="quick-searches" aria-label="Popular searches">
-            <span>Try:</span><button type="button" data-query="type 2 diabetes">Type 2 diabetes</button><button type="button" data-query="breast cancer">Breast cancer</button><button type="button" data-query="Alzheimer disease">Alzheimer disease</button>
+            <span>Try:</span>
+            <button type="button" data-query="type 2 diabetes">Type 2 diabetes</button>
+            <button type="button" data-query="breast cancer">Breast cancer</button>
+            <button type="button" data-query="Africa">Africa</button>
           </div>
         </form>
+      </section>
+
+      <section class="registry-highlight" aria-label="PACTR Africa integration">
+        <div>
+          <p class="eyebrow">Africa-specific registry</p>
+          <h2>Pan African Clinical Trial Registry</h2>
+        </div>
+        <div class="registry-actions">
+          <a class="primary-link" href="https://pactr.samrc.ac.za/GIS_Viewer.aspx" target="_blank" rel="noreferrer">Open PACTR GIS Viewer</a>
+          <button id="africa-focus" type="button" class="secondary-button">Focus Africa trials</button>
+        </div>
+        <p class="registry-copy">Use the official PACTR geographic viewer to explore African clinical research by country, location, and study detail.</p>
       </section>
 
       <section class="results-section" aria-live="polite">
@@ -46,7 +64,7 @@
       </section>
     </main>
 
-    <footer><span>TrialScope</span><span>Data sourced from <a href="https://clinicaltrials.gov/" target="_blank" rel="noreferrer">ClinicalTrials.gov</a></span><span>For research information only — not medical advice.</span></footer>
+    <footer><span>TrialScope</span><span>Data sourced from <a href="https://clinicaltrials.gov/" target="_blank" rel="noreferrer">ClinicalTrials.gov</a> and <a href="https://pactr.samrc.ac.za/GIS_Viewer.aspx" target="_blank" rel="noreferrer">PACTR</a></span><span>For research information only — not medical advice.</span></footer>
     <script src="app.js" defer></script>
   </body>
 </html>
