@@ -43,15 +43,15 @@ function trialCard(study) {
   const design = p.designModule || {};
   const contacts = p.contactsLocationsModule || {};
   const locations = contacts.locations || [];
-  const location = locations[0]?.city ? `${locations[0].city}, ${locations[0].country || ''}` : 'Location not specified';
+  const location = locations[0]?.city ? `${locations[0].city}, ${locations[0].country || ''}` : t('locationNotSpecified');
   const statusText = formatStatus(status.overallStatus);
   const statusClass = statusText.includes('recruit') ? ' recruiting' : '';
-  const studyType = design.studyType ? `${design.studyType.charAt(0)}${design.studyType.slice(1).toLowerCase()} study` : 'Clinical study';
+  const studyType = design.studyType ? `${design.studyType.charAt(0)}${design.studyType.slice(1).toLowerCase()} study` : t('clinicalStudy');
   return `<article class="trial-card">
     <div class="card-top"><span class="status${statusClass}">${escapeHTML(statusText)}</span><span class="nct">${escapeHTML(id.nctId || '')}</span></div>
     <h3>${escapeHTML(id.briefTitle || 'Untitled study')}</h3>
     <div class="meta"><span><span class="meta-icon">◈</span>${escapeHTML(studyType)}</span><span><span class="meta-icon">⌖</span>${escapeHTML(location)}</span></div>
-    <a class="trial-link" href="https://clinicaltrials.gov/study/${encodeURIComponent(id.nctId || '')}" target="_blank" rel="noreferrer">View study details →</a>
+    <a class="trial-link" href="https://clinicaltrials.gov/study/${encodeURIComponent(id.nctId || '')}" target="_blank" rel="noreferrer">${t('viewStudyDetails')} →</a>
   </article>`;
 }
 
@@ -74,19 +74,21 @@ async function searchTrials({ append = false } = {}) {
     const data = await response.json();
     const studies = data.studies || [];
     if (!append) results.innerHTML = '';
-    results.insertAdjacentHTML('beforeend', studies.length ? studies.map(trialCard).join('') : '<p class="muted">No trials found for your search. Try a different condition or country.</p>');
+    results.insertAdjacentHTML('beforeend', studies.length ? studies.map(trialCard).join('') : `<p class="muted">${t('noTrialsFound')}</p>`);
     nextPageToken = data.nextPageToken || '';
     loadMore.hidden = !nextPageToken;
-    resultCount.textContent = data.totalCount ? `${data.totalCount.toLocaleString()} trials found` : `${studies.length} trials shown`;
-    resultsTitle.textContent = currentCountry ? `Trials in ${currentCountry}` : (currentQuery ? `Results for \"${currentQuery}\"` : 'Featured African trials');
+    resultCount.textContent = data.totalCount ? `${data.totalCount.toLocaleString()} ${t('trialsFound')}` : `${studies.length} ${t('trialsShown')}`;
+    resultsTitle.textContent = currentCountry ? `${t('trialsIn')} ${currentCountry}` : (currentQuery ? `${t('resultsFor')} "${currentQuery}"` : t('featuredAfricanTrials'));
   } catch (error) {
     if (!append) results.innerHTML = '';
-    statusMessage.textContent = 'We could not load trials right now. Please check your connection and try again.';
+    statusMessage.textContent = t('unableLoadTrials');
     statusMessage.hidden = false;
-    resultCount.textContent = 'Unable to load trials';
+    resultCount.textContent = `Unable to load trials`;
     console.error(error);
   }
 }
+
+window.updateSearchResults = searchTrials;
 
 function runSearch(query) {
   currentQuery = query.trim();
@@ -94,7 +96,7 @@ function runSearch(query) {
   searchTrials();
 }
 
-participantForm.addEventListener('submit', event => {
+participantForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   const formData = new FormData(participantForm);
   const country = formData.get('country')?.toString().trim();
@@ -105,17 +107,29 @@ participantForm.addEventListener('submit', event => {
   const telephone = formData.get('telephone')?.toString().trim();
 
   if (!country || !diseaseArea || !email || !address || !code || !telephone) {
-    statusMessage.textContent = 'Please complete all fields so your contact details can be submitted.';
+    statusMessage.textContent = t('pleaseCompleteFields');
     statusMessage.hidden = false;
     return;
   }
 
-  const summary = `Country: ${country}\nDisease area: ${diseaseArea}\nEmail: ${email}\nAddress: ${address}\nCode: ${code}\nTelephone: ${telephone}`;
-  const mailtoLink = `mailto:info@africatrialus.com?subject=${encodeURIComponent('New participant contact submission')}&body=${encodeURIComponent(summary)}`;
-  window.location.href = mailtoLink;
-  participantForm.reset();
-  statusMessage.textContent = 'Thank you. Your contact details have been prepared for submission.';
-  statusMessage.hidden = false;
+  try {
+    await firebase.firestore().collection('participantContacts').add({
+      country,
+      diseaseArea,
+      email,
+      address,
+      code,
+      telephone,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    participantForm.reset();
+    statusMessage.textContent = t('contactSaved');
+    statusMessage.hidden = false;
+  } catch (error) {
+    statusMessage.textContent = t('errorSaving');
+    statusMessage.hidden = false;
+    console.error(error);
+  }
 });
 
 form.addEventListener('submit', event => {

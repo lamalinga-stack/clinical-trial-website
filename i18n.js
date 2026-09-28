@@ -70,6 +70,10 @@ const translations = {
     dataSourced: 'Data sourced from',
     and: 'and',
     researchInfoOnly: 'For research information only — not medical advice.',
+    trialsIn: 'Trials in',
+    resultsFor: 'Results for',
+    locationNotSpecified: 'Location not specified',
+    clinicalStudy: 'Clinical study',
     // Country names
     southAfrica: 'South Africa',
     nigeria: 'Nigeria',
@@ -195,6 +199,10 @@ const translations = {
     dataSourced: 'Données provenant de',
     and: 'et',
     researchInfoOnly: 'Pour l\'information sur la recherche uniquement — pas un conseil médical.',
+    trialsIn: 'Essais en',
+    resultsFor: 'Résultats pour',
+    locationNotSpecified: 'Localisation non spécifiée',
+    clinicalStudy: 'Étude clinique',
     // Country names
     southAfrica: 'Afrique du Sud',
     nigeria: 'Nigéria',
@@ -285,7 +293,7 @@ const translations = {
     countryPlaceholder: 'ex. África do Sul',
     diseaseArea: 'Área terapêutica / Indicação',
     diseaseAreaPlaceholder: 'ex. Malária, Oncologia, Cardiologia',
-    email: 'Correio eletrónico',
+    email: 'Correio eletrônico',
     emailPlaceholder: 'nome@exemplo.org',
     address: 'Endereço',
     addressPlaceholder: 'Endereço físico',
@@ -320,15 +328,19 @@ const translations = {
     dataSourced: 'Dados obtidos de',
     and: 'e',
     researchInfoOnly: 'Apenas para informações de pesquisa — não é aconselhamento médico.',
+    trialsIn: 'Ensaios em',
+    resultsFor: 'Resultados para',
+    locationNotSpecified: 'Localização não especificada',
+    clinicalStudy: 'Estudo clínico',
     // Country names
     southAfrica: 'África do Sul',
     nigeria: 'Nigéria',
-    kenya: 'Quénia',
+    kenya: 'Quênia',
     uganda: 'Uganda',
     ethiopia: 'Etiópia',
     ghana: 'Gana',
     tanzania: 'Tanzânia',
-    cameroon: 'Camerão',
+    cameroon: 'Camarões',
     senegal: 'Senegal',
     zambia: 'Zâmbia',
     zimbabwe: 'Zimbabwe',
@@ -438,9 +450,11 @@ function t(key) {
 }
 
 function setLanguage(lang) {
-  currentLanguage = lang;
-  localStorage.setItem('language', lang);
-  updatePageLanguage();
+  if (lang && translations[lang]) {
+    currentLanguage = lang;
+    localStorage.setItem('language', lang);
+    updatePageLanguage();
+  }
 }
 
 function getCountryName(countryId) {
@@ -488,15 +502,24 @@ function updatePageLanguage() {
     btn.classList.toggle('active', btn.dataset.lang === currentLanguage);
   });
 
-  // Re-render search results if they exist
-  if (window.searchTrials) {
-    window.searchTrials();
-  }
+  // Trigger search results update if needed
+  window.updateSearchResults?.();
 }
 
-// Initialize language on page load
+// Set up language button event listeners
 window.addEventListener('DOMContentLoaded', () => {
+  // Restore saved language
   const savedLanguage = localStorage.getItem('language') || 'en';
   currentLanguage = savedLanguage;
+
+  // Set up language buttons
+  const langButtons = document.querySelectorAll('.lang-btn');
+  langButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      setLanguage(btn.dataset.lang);
+    });
+  });
+
+  // Initialize page language
   updatePageLanguage();
 });
