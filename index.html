@@ -13,29 +13,34 @@
   <body>
     <header class="site-header">
       <a class="brand" href="./" aria-label="AfricaTrialUs home"><span class="brand-mark">🌍</span><span>Africa<span class="brand-accent">TrialUs</span></span></a>
-      <nav class="header-actions" aria-label="Registry links">
-        <a href="https://clinicaltrials.gov/" target="_blank" rel="noreferrer">ClinicalTrials.gov</a>
-        <a href="https://pactr.samrc.ac.za/GIS_Viewer.aspx" target="_blank" rel="noreferrer">PACTR Africa</a>
+      <nav class="header-actions" aria-label="Registry links and language selector">
+        <div class="lang-selector">
+          <button class="lang-btn active" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="fr">FR</button>
+          <button class="lang-btn" data-lang="pt">PT</button>
+        </div>
+        <a href="https://clinicaltrials.gov/" target="_blank" rel="noreferrer" data-i18n="clinicalTrialsGov">ClinicalTrials.gov</a>
+        <a href="https://pactr.samrc.ac.za/GIS_Viewer.aspx" target="_blank" rel="noreferrer" data-i18n="pactrAfrica">PACTR Africa</a>
       </nav>
     </header>
 
     <main>
       <section class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">Clinical research across Africa</p>
-          <h1>Find <em>health trials</em> in your country.</h1>
-          <p class="hero-text">Discover registered clinical studies conducted across African nations. Search by condition, select your country, and explore ongoing research.</p>
+          <p class="eyebrow" data-i18n="clinicalResearch">Clinical research across Africa</p>
+          <h1><span data-i18n="findHealthTrials">Find health trials in your country.</span></h1>
+          <p class="hero-text" data-i18n="heroText">Discover registered clinical studies conducted across African nations. Search by condition, select your country, and explore ongoing research.</p>
         </div>
         <form id="search-form" class="search-panel">
-          <label for="search-input">Search by condition or treatment</label>
+          <label for="search-input" data-i18n="searchByCondition">Search by condition or treatment</label>
           <div class="search-row">
-            <input id="search-input" type="search" placeholder="e.g. malaria, diabetes, HIV, tuberculosis" autocomplete="off" />
-            <button type="submit"><span>Search trials</span><span aria-hidden="true">→</span></button>
+            <input id="search-input" type="search" data-i18n-placeholder="searchPlaceholder" autocomplete="off" />
+            <button type="submit"><span data-i18n="searchButton">Search trials</span><span aria-hidden="true">→</span></button>
           </div>
           <div class="filter-row">
-            <label for="country-select">Filter by African country</label>
+            <label for="country-select" data-i18n="filterByCountry">Filter by African country</label>
             <select id="country-select">
-              <option value="">All African countries</option>
+              <option value="" data-i18n="allCountries">All African countries</option>
               <option value="South Africa">South Africa</option>
               <option value="Nigeria">Nigeria</option>
               <option value="Kenya">Kenya</option>
@@ -59,83 +64,83 @@
             </select>
           </div>
           <div class="quick-searches" aria-label="Popular searches">
-            <span>Popular:</span>
-            <button type="button" data-query="malaria">Malaria</button>
-            <button type="button" data-query="HIV">HIV/AIDS</button>
-            <button type="button" data-query="tuberculosis">Tuberculosis</button>
-            <button type="button" data-query="diabetes">Diabetes</button>
+            <span data-i18n="popular">Popular:</span>
+            <button type="button" data-query="malaria" data-i18n="malaria">Malaria</button>
+            <button type="button" data-query="HIV" data-i18n="hivAids">HIV/AIDS</button>
+            <button type="button" data-query="tuberculosis" data-i18n="tuberculosis">Tuberculosis</button>
+            <button type="button" data-query="diabetes" data-i18n="diabetes">Diabetes</button>
           </div>
         </form>
       </section>
 
       <section class="coverage-strip" aria-label="Trial coverage overview">
-        <div><strong>Focus</strong><span>Africa-registered trials</span></div>
-        <div><strong>Countries</strong><span>20+ African nations</span></div>
-        <div><strong>Search</strong><span>Condition, country, treatment</span></div>
-        <div><strong>Sources</strong><span>ClinicalTrials.gov & PACTR</span></div>
+        <div><strong data-i18n="focus">Focus</strong><span data-i18n="africaRegisteredTrials">Africa-registered trials</span></div>
+        <div><strong data-i18n="countries">Countries</strong><span data-i18n="twentyPlusCountries">20+ African nations</span></div>
+        <div><strong data-i18n="search">Search</strong><span data-i18n="conditionCountryTreatment">Condition, country, treatment</span></div>
+        <div><strong data-i18n="sources">Sources</strong><span data-i18n="sourcesList">ClinicalTrials.gov & PACTR</span></div>
       </section>
 
       <section class="registry-highlight" aria-label="PACTR Africa integration">
         <div>
-          <p class="eyebrow">Pan African Registry</p>
-          <h2>PACTR GIS Viewer</h2>
+          <p class="eyebrow" data-i18n="panAfricanRegistry">Pan African Registry</p>
+          <h2 data-i18n="pactrGisViewer">PACTR GIS Viewer</h2>
         </div>
         <div class="registry-actions">
-          <a class="primary-link" href="https://pactr.samrc.ac.za/GIS_Viewer.aspx" target="_blank" rel="noreferrer">Open PACTR Map</a>
-          <button id="pactr-focus" type="button" class="secondary-button">View on map</button>
+          <a class="primary-link" href="https://pactr.samrc.ac.za/GIS_Viewer.aspx" target="_blank" rel="noreferrer" data-i18n="openPactrMap">Open PACTR Map</a>
+          <button id="pactr-focus" type="button" class="secondary-button" data-i18n="viewOnMap">View on map</button>
         </div>
-        <p class="registry-copy">Browse trials by geographic location using the official PACTR interactive map viewer for country-specific research.</p>
+        <p class="registry-copy" data-i18n="pactrCopy">Browse trials by geographic location using the official PACTR interactive map viewer for country-specific research.</p>
       </section>
 
       <section class="participant-section">
         <div class="section-heading">
-          <p class="eyebrow">Participant contacts</p>
-          <h2>Register your clinic or study contact details</h2>
+          <p class="eyebrow" data-i18n="participantContacts">Participant contacts</p>
+          <h2 data-i18n="registerClinic">Register your clinic or study contact details</h2>
         </div>
 
         <form id="participant-form" class="participant-form">
           <div class="form-grid">
             <label>
-              <span>Country</span>
-              <input type="text" name="country" placeholder="e.g. South Africa" />
+              <span data-i18n="country">Country</span>
+              <input type="text" name="country" data-i18n-placeholder="countryPlaceholder" />
             </label>
             <label>
-              <span>Disease area</span>
-              <input type="text" name="diseaseArea" placeholder="e.g. Malaria" />
+              <span data-i18n="diseaseArea">Disease area</span>
+              <input type="text" name="diseaseArea" data-i18n-placeholder="diseaseAreaPlaceholder" />
             </label>
             <label>
-              <span>Email</span>
-              <input type="email" name="email" placeholder="name@example.org" />
+              <span data-i18n="email">Email</span>
+              <input type="email" name="email" data-i18n-placeholder="emailPlaceholder" />
             </label>
             <label>
-              <span>Address</span>
-              <input type="text" name="address" placeholder="Physical address" />
+              <span data-i18n="address">Address</span>
+              <input type="text" name="address" data-i18n-placeholder="addressPlaceholder" />
             </label>
             <label>
-              <span>Code</span>
-              <input type="text" name="code" placeholder="Postal or study code" />
+              <span data-i18n="code">Code</span>
+              <input type="text" name="code" data-i18n-placeholder="codePlaceholder" />
             </label>
             <label>
-              <span>Telephone number</span>
-              <input type="tel" name="telephone" placeholder="+27 11 000 0000" />
+              <span data-i18n="telephone">Telephone number</span>
+              <input type="tel" name="telephone" data-i18n-placeholder="telephonePlaceholder" />
             </label>
           </div>
-          <button type="submit" class="submit-button">Submit contact</button>
+          <button type="submit" class="submit-button" data-i18n="submitContact">Submit contact</button>
         </form>
       </section>
 
       <section class="newsfeed-section">
         <div class="section-heading">
-          <p class="eyebrow">Latest updates</p>
-          <h2>Africa clinical trials news</h2>
-          <p class="section-copy">Follow the latest announcements and updates about clinical research across Africa.</p>
+          <p class="eyebrow" data-i18n="latestUpdates">Latest updates</p>
+          <h2 data-i18n="africaTrialsNews">Africa clinical trials news</h2>
+          <p class="section-copy" data-i18n="newsDescription">Follow the latest announcements and updates about clinical research across Africa.</p>
         </div>
 
         <div class="social-feeds">
           <div class="social-feed">
             <div class="feed-header">
               <span class="feed-icon">f</span>
-              <span class="feed-label">Facebook</span>
+              <span class="feed-label" data-i18n="facebook">Facebook</span>
             </div>
             <div class="feed-content">
               <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FAfricaTrialUs&tabs=timeline&width=100%25&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId" width="100%" height="500" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
@@ -145,7 +150,7 @@
           <div class="social-feed">
             <div class="feed-header">
               <span class="feed-icon">𝕏</span>
-              <span class="feed-label">X (Twitter)</span>
+              <span class="feed-label" data-i18n="xTwitter">X (Twitter)</span>
             </div>
             <div class="feed-content">
               <a class="twitter-timeline" href="https://twitter.com/AfricaTrialUs?ref_src=twsrc%5Etfw" data-height="500">Tweets by AfricaTrialUs</a>
@@ -155,7 +160,7 @@
           <div class="social-feed">
             <div class="feed-header">
               <span class="feed-icon">📷</span>
-              <span class="feed-label">Instagram</span>
+              <span class="feed-label" data-i18n="instagram">Instagram</span>
             </div>
             <div class="feed-content">
               <iframe src="https://www.instagram.com/africatrialus/embed" width="100%" height="500" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
@@ -166,17 +171,18 @@
 
       <section class="results-section" aria-live="polite">
         <div class="results-toolbar">
-          <div><p class="eyebrow">Clinical Trials</p><h2 id="results-title">Featured African trials</h2><p id="result-count" class="muted">Loading trials across Africa…</p></div>
-          <label class="sort-control">Sort by <select id="sort-select"><option value="LastUpdatePostDate">Recently updated</option><option value="StudyFirstPostDate">Recently posted</option><option value="OverallStatus">Study status</option></select></label>
+          <div><p class="eyebrow" data-i18n="clinicalTrials">Clinical Trials</p><h2 id="results-title" data-i18n="featuredAfricanTrials">Featured African trials</h2><p id="result-count" class="muted" data-i18n="loadingTrials">Loading trials across Africa…</p></div>
+          <label class="sort-control"><span data-i18n="sortBy">Sort by</span> <select id="sort-select"><option value="LastUpdatePostDate" data-i18n="recentlyUpdated">Recently updated</option><option value="StudyFirstPostDate" data-i18n="recentlyPosted">Recently posted</option><option value="OverallStatus" data-i18n="studyStatus">Study status</option></select></label>
         </div>
         <div id="status-message" class="status-message" hidden></div>
         <div id="results" class="results-grid"></div>
-        <button id="load-more" class="load-more" type="button" hidden>Load more studies <span>↓</span></button>
+        <button id="load-more" class="load-more" type="button" hidden><span data-i18n="loadMoreStudies">Load more studies</span> <span>↓</span></button>
       </section>
     </main>
 
-    <footer><span>AfricaTrialUs</span><span>Data sourced from <a href="https://clinicaltrials.gov/" target="_blank" rel="noreferrer">ClinicalTrials.gov</a> and <a href="https://pactr.samrc.ac.za/GIS_Viewer.aspx" target="_blank" rel="noreferrer">PACTR</a></span><span>For research information only — not medical advice.</span></footer>
+    <footer><span>AfricaTrialUs</span><span><span data-i18n="dataSourced">Data sourced from</span> <a href="https://clinicaltrials.gov/" target="_blank" rel="noreferrer">ClinicalTrials.gov</a> <span data-i18n="and">and</span> <a href="https://pactr.samrc.ac.za/GIS_Viewer.aspx" target="_blank" rel="noreferrer">PACTR</a></span><span data-i18n="researchInfoOnly">For research information only — not medical advice.</span></footer>
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <script src="i18n.js" defer></script>
     <script src="firebase-config.js" defer></script>
     <script src="app.js" defer></script>
   </body>

@@ -6,12 +6,16 @@ body { margin:0; color:var(--ink); background:var(--cream); font-family:'DM Sans
 .brand-mark { display:grid; place-items:center; width:28px; height:28px; color:white; background:var(--teal); border-radius:9px; font-size:25px; line-height:1; }
 .brand-accent { color:var(--teal); }
 .header-actions { display:flex; align-items:center; gap:18px; }
+.lang-selector { display:flex; gap:4px; }
+.lang-btn { padding:6px 10px; border:1px solid var(--line); border-radius:6px; background:white; color:var(--muted); font:600 11px 'DM Sans'; cursor:pointer; transition:all .2s; }
+.lang-btn:hover { color:var(--teal); border-color:var(--teal); }
+.lang-btn.active { background:var(--teal); color:white; border-color:var(--teal); }
 .header-actions a { color:var(--muted); text-decoration:none; font-size:13px; font-weight:600; }
 .header-actions a:hover { color:var(--teal); }
 .hero { max-width:1240px; margin:24px auto 0; padding:72px 8%; background:var(--mint); border-radius:28px; display:grid; grid-template-columns:1fr 1.1fr; align-items:center; gap:9%; }
 .eyebrow { color:var(--teal); font-size:11px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; margin:0 0 14px; }
 .hero h1 { max-width:440px; margin:0; font:600 clamp(38px,4vw,64px)/1.03 'Space Grotesk',sans-serif; letter-spacing:-.055em; }
-.hero h1 em { color:var(--teal); font-style:normal; }
+.hero h1 em, .hero h1 span { color:var(--teal); font-style:normal; }
 .hero-text { max-width:430px; margin:22px 0 0; color:#527071; font-size:16px; line-height:1.65; }
 .search-panel { padding:28px; background:white; box-shadow:0 15px 40px #126d5915; border-radius:18px; }
 .search-panel label { display:block; font-size:13px; font-weight:700; margin-bottom:11px; }
@@ -95,7 +99,9 @@ footer span:first-child { color:var(--teal); font-weight:700; }
 footer a { color:var(--teal); }
 @media (max-width:800px) { .hero { grid-template-columns:1fr; margin:10px 16px 0; padding:42px 25px; gap:30px; }
   .site-header { padding:0 20px; }
-  .header-actions { gap:12px; }
+  .lang-selector { gap:2px; }
+  .lang-btn { padding:5px 8px; font-size:10px; }
+  .header-actions { gap:12px; flex-wrap:wrap; }
   .coverage-strip { grid-template-columns:repeat(2, 1fr); padding:0 20px; }
   .filter-row { flex-direction:column; align-items:flex-start; }
   .registry-highlight { flex-direction:column; align-items:flex-start; }
