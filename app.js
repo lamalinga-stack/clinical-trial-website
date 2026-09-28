@@ -1,16 +1,30 @@
 const API_URL = 'https://clinicaltrials.gov/api/v2/studies';
 const PACTR_URL = 'https://pactr.samrc.ac.za/GIS_Viewer.aspx';
+const AFRICAN_COUNTRIES = [
+  'South Africa', 'Nigeria', 'Kenya', 'Uganda', 'Ethiopia', 'Ghana', 'Tanzania',
+  'Cameroon', 'Senegal', 'Zambia', 'Zimbabwe', 'Mozambique', 'Rwanda', 'Malawi',
+  'Egypt', 'Tunisia', 'Morocco', 'Angola', 'Botswana', 'Namibia', 'Benin',
+  'Burundi', 'Cape Verde', 'Central African Republic', 'Chad', 'Comoros',
+  'Congo', 'Democratic Republic of Congo', 'Cote d\'Ivoire', 'Djibouti',
+  'Equatorial Guinea', 'Eritrea', 'Eswatini', 'Gabon', 'Gambia', 'Guinea',
+  'Guinea-Bissau', 'Lesotho', 'Liberia', 'Libya', 'Madagascar', 'Mali',
+  'Mauritania', 'Mauritius', 'Niger', 'Sao Tome and Principe', 'Seychelles',
+  'Sierra Leone', 'Somalia', 'South Sudan', 'Sudan', 'Togo', 'Tonga'
+];
+
 const form = document.querySelector('#search-form');
 const input = document.querySelector('#search-input');
+const countrySelect = document.querySelector('#country-select');
 const results = document.querySelector('#results');
 const resultCount = document.querySelector('#result-count');
 const resultsTitle = document.querySelector('#results-title');
 const statusMessage = document.querySelector('#status-message');
 const loadMore = document.querySelector('#load-more');
 const sortSelect = document.querySelector('#sort-select');
-const africaFocusButton = document.querySelector('#africa-focus');
+const pactrButton = document.querySelector('#pactr-focus');
 let nextPageToken = '';
 let currentQuery = '';
+let currentCountry = '';
 
 const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
 const formatStatus = status => (status || 'Unknown').toLowerCase().replaceAll('_', ' ');
@@ -19,19 +33,6 @@ function showLoading(append = false) {
   if (!append) results.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
   loadMore.hidden = true;
   statusMessage.hidden = true;
-}
-
-function renderAfricaNotice() {
-  results.innerHTML = `
-    <article class="notice-card">
-      <h3>PACTR Africa registry</h3>
-      <p>For African-focused clinical research, use the official Pan African Clinical Trial Registry geographic viewer to browse region- and country-specific studies.</p>
-      <a href="${PACTR_URL}" target="_blank" rel="noreferrer">Open the PACTR GIS Viewer →</a>
-    </article>
-  `;
-  resultCount.textContent = 'Africa-specific registry access';
-  resultsTitle.textContent = 'PACTR Africa trial explorer';
-  loadMore.hidden = true;
 }
 
 function trialCard(study) {
@@ -53,13 +54,18 @@ function trialCard(study) {
   </article>`;
 }
 
+function buildSearchQuery() {
+  let query = currentQuery || '*';
+  if (currentCountry) {
+    query = query === '*' ? currentCountry : `${query} AND ${currentCountry}`;
+  }
+  return query;
+}
+
 async function searchTrials({ append = false } = {}) {
   showLoading(append);
-  if (currentQuery && currentQuery.toLowerCase() === 'africa') {
-    renderAfricaNotice();
-    return;
-  }
-  const params = new URLSearchParams({ 'query.term': currentQuery || '*', pageSize: '12', format: 'json', countTotal: 'true', sort: `${sortSelect.value}:desc` });
+  const searchQuery = buildSearchQuery();
+  const params = new URLSearchParams({ 'query.term': searchQuery, pageSize: '12', format: 'json', countTotal: 'true', sort: `${sortSelect.value}:desc` });
   if (nextPageToken && append) params.set('pageToken', nextPageToken);
   try {
     const response = await fetch(`${API_URL}?${params}`);
@@ -67,16 +73,16 @@ async function searchTrials({ append = false } = {}) {
     const data = await response.json();
     const studies = data.studies || [];
     if (!append) results.innerHTML = '';
-    results.insertAdjacentHTML('beforeend', studies.length ? studies.map(trialCard).join('') : '<p class="muted">No studies matched your search. Try a broader term.</p>');
+    results.insertAdjacentHTML('beforeend', studies.length ? studies.map(trialCard).join('') : '<p class="muted">No trials found for your search. Try a different condition or country.</p>');
     nextPageToken = data.nextPageToken || '';
     loadMore.hidden = !nextPageToken;
-    resultCount.textContent = data.totalCount ? `${data.totalCount.toLocaleString()} studies found` : `${studies.length} studies shown`;
-    resultsTitle.textContent = currentQuery ? `Results for “${currentQuery}”` : 'Featured clinical trials';
+    resultCount.textContent = data.totalCount ? `${data.totalCount.toLocaleString()} trials found` : `${studies.length} trials shown`;
+    resultsTitle.textContent = currentCountry ? `Trials in ${currentCountry}` : (currentQuery ? `Results for \"${currentQuery}\"` : 'Featured African trials');
   } catch (error) {
     if (!append) results.innerHTML = '';
-    statusMessage.textContent = 'We could not load studies right now. Please check your connection and try again.';
+    statusMessage.textContent = 'We could not load trials right now. Please check your connection and try again.';
     statusMessage.hidden = false;
-    resultCount.textContent = 'Unable to load studies';
+    resultCount.textContent = 'Unable to load trials';
     console.error(error);
   }
 }
@@ -92,14 +98,18 @@ form.addEventListener('submit', event => {
   runSearch(input.value);
 });
 
+countrySelect.addEventListener('change', () => {
+  currentCountry = countrySelect.value;
+  nextPageToken = '';
+  searchTrials();
+});
+
 document.querySelectorAll('[data-query]').forEach(button => button.addEventListener('click', () => {
   input.value = button.dataset.query;
   runSearch(button.dataset.query);
 }));
 
-africaFocusButton.addEventListener('click', () => {
-  input.value = 'Africa';
-  runSearch('Africa');
+pactrButton.addEventListener('click', () => {
   window.open(PACTR_URL, '_blank', 'noopener,noreferrer');
 });
 
