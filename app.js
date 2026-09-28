@@ -1,4 +1,5 @@
 const API_URL = 'https://clinicaltrials.gov/api/v2/studies';
+const PACTR_URL = 'https://pactr.samrc.ac.za/GIS_Viewer.aspx';
 const form = document.querySelector('#search-form');
 const input = document.querySelector('#search-input');
 const results = document.querySelector('#results');
@@ -7,17 +8,30 @@ const resultsTitle = document.querySelector('#results-title');
 const statusMessage = document.querySelector('#status-message');
 const loadMore = document.querySelector('#load-more');
 const sortSelect = document.querySelector('#sort-select');
+const africaFocusButton = document.querySelector('#africa-focus');
 let nextPageToken = '';
 let currentQuery = '';
 
 const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
-const first = value => Array.isArray(value) ? value[0] : value;
 const formatStatus = status => (status || 'Unknown').toLowerCase().replaceAll('_', ' ');
 
 function showLoading(append = false) {
   if (!append) results.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
   loadMore.hidden = true;
   statusMessage.hidden = true;
+}
+
+function renderAfricaNotice() {
+  results.innerHTML = `
+    <article class="notice-card">
+      <h3>PACTR Africa registry</h3>
+      <p>For African-focused clinical research, use the official Pan African Clinical Trial Registry geographic viewer to browse region- and country-specific studies.</p>
+      <a href="${PACTR_URL}" target="_blank" rel="noreferrer">Open the PACTR GIS Viewer →</a>
+    </article>
+  `;
+  resultCount.textContent = 'Africa-specific registry access';
+  resultsTitle.textContent = 'PACTR Africa trial explorer';
+  loadMore.hidden = true;
 }
 
 function trialCard(study) {
@@ -41,7 +55,11 @@ function trialCard(study) {
 
 async function searchTrials({ append = false } = {}) {
   showLoading(append);
-  const params = new URLSearchParams({ query.term: currentQuery || '*', pageSize: '12', format: 'json', countTotal: 'true', sort: `${sortSelect.value}:desc` });
+  if (currentQuery && currentQuery.toLowerCase() === 'africa') {
+    renderAfricaNotice();
+    return;
+  }
+  const params = new URLSearchParams({ 'query.term': currentQuery || '*', pageSize: '12', format: 'json', countTotal: 'true', sort: `${sortSelect.value}:desc` });
   if (nextPageToken && append) params.set('pageToken', nextPageToken);
   try {
     const response = await fetch(`${API_URL}?${params}`);
@@ -68,8 +86,27 @@ function runSearch(query) {
   nextPageToken = '';
   searchTrials();
 }
-form.addEventListener('submit', event => { event.preventDefault(); runSearch(input.value); });
-document.querySelectorAll('[data-query]').forEach(button => button.addEventListener('click', () => { input.value = button.dataset.query; runSearch(button.dataset.query); }));
+
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  runSearch(input.value);
+});
+
+document.querySelectorAll('[data-query]').forEach(button => button.addEventListener('click', () => {
+  input.value = button.dataset.query;
+  runSearch(button.dataset.query);
+}));
+
+africaFocusButton.addEventListener('click', () => {
+  input.value = 'Africa';
+  runSearch('Africa');
+  window.open(PACTR_URL, '_blank', 'noopener,noreferrer');
+});
+
 loadMore.addEventListener('click', () => searchTrials({ append: true }));
-sortSelect.addEventListener('change', () => { nextPageToken = ''; searchTrials(); });
+sortSelect.addEventListener('change', () => {
+  nextPageToken = '';
+  searchTrials();
+});
+
 runSearch('');
