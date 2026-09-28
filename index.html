@@ -47,7 +47,7 @@
               <option value="Senegal">Senegal</option>
               <option value="Zambia">Zambia</option>
               <option value="Zimbabwe">Zimbabwe</option>
-              <option value="Mozambique">Mozambique
+              <option value="Mozambique">Mozambique</option>
               <option value="Rwanda">Rwanda</option>
               <option value="Malawi">Malawi</option>
               <option value="Egypt">Egypt</option>
@@ -85,6 +85,43 @@
           <button id="pactr-focus" type="button" class="secondary-button">View on map</button>
         </div>
         <p class="registry-copy">Browse trials by geographic location using the official PACTR interactive map viewer for country-specific research.</p>
+      </section>
+
+      <section class="participant-section">
+        <div class="section-heading">
+          <p class="eyebrow">Participant contacts</p>
+          <h2>Register your clinic or study contact details</h2>
+        </div>
+
+        <form id="participant-form" class="participant-form">
+          <div class="form-grid">
+            <label>
+              <span>Country</span>
+              <input type="text" name="country" placeholder="e.g. South Africa" />
+            </label>
+            <label>
+              <span>Disease area</span>
+              <input type="text" name="diseaseArea" placeholder="e.g. Malaria" />
+            </label>
+            <label>
+              <span>Email</span>
+              <input type="email" name="email" placeholder="name@example.org" />
+            </label>
+            <label>
+              <span>Address</span>
+              <input type="text" name="address" placeholder="Physical address" />
+            </label>
+            <label>
+              <span>Code</span>
+              <input type="text" name="code" placeholder="Postal or study code" />
+            </label>
+            <label>
+              <span>Telephone number</span>
+              <input type="tel" name="telephone" placeholder="+27 11 000 0000" />
+            </label>
+          </div>
+          <button type="submit" class="submit-button">Submit contact</button>
+        </form>
       </section>
 
       <section class="results-section" aria-live="polite">

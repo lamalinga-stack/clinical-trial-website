@@ -9,7 +9,7 @@ const AFRICAN_COUNTRIES = [
   'Equatorial Guinea', 'Eritrea', 'Eswatini', 'Gabon', 'Gambia', 'Guinea',
   'Guinea-Bissau', 'Lesotho', 'Liberia', 'Libya', 'Madagascar', 'Mali',
   'Mauritania', 'Mauritius', 'Niger', 'Sao Tome and Principe', 'Seychelles',
-  'Sierra Leone', 'Somalia', 'South Sudan', 'Sudan', 'Togo', 'Tonga'
+  'Sierra Leone', 'Somalia', 'South Sudan', 'Sudan', 'Togo'
 ];
 
 const form = document.querySelector('#search-form');
@@ -22,6 +22,7 @@ const statusMessage = document.querySelector('#status-message');
 const loadMore = document.querySelector('#load-more');
 const sortSelect = document.querySelector('#sort-select');
 const pactrButton = document.querySelector('#pactr-focus');
+const participantForm = document.querySelector('#participant-form');
 let nextPageToken = '';
 let currentQuery = '';
 let currentCountry = '';
@@ -92,6 +93,30 @@ function runSearch(query) {
   nextPageToken = '';
   searchTrials();
 }
+
+participantForm.addEventListener('submit', event => {
+  event.preventDefault();
+  const formData = new FormData(participantForm);
+  const country = formData.get('country')?.toString().trim();
+  const diseaseArea = formData.get('diseaseArea')?.toString().trim();
+  const email = formData.get('email')?.toString().trim();
+  const address = formData.get('address')?.toString().trim();
+  const code = formData.get('code')?.toString().trim();
+  const telephone = formData.get('telephone')?.toString().trim();
+
+  if (!country || !diseaseArea || !email || !address || !code || !telephone) {
+    statusMessage.textContent = 'Please complete all fields so your contact details can be submitted.';
+    statusMessage.hidden = false;
+    return;
+  }
+
+  const summary = `Country: ${country}\nDisease area: ${diseaseArea}\nEmail: ${email}\nAddress: ${address}\nCode: ${code}\nTelephone: ${telephone}`;
+  const mailtoLink = `mailto:info@africatrialus.com?subject=${encodeURIComponent('New participant contact submission')}&body=${encodeURIComponent(summary)}`;
+  window.location.href = mailtoLink;
+  participantForm.reset();
+  statusMessage.textContent = 'Thank you. Your contact details have been prepared for submission.';
+  statusMessage.hidden = false;
+});
 
 form.addEventListener('submit', event => {
   event.preventDefault();
