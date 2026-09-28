@@ -1,0 +1,18 @@
+{
+  "name": "africatrialus-functions",
+  "version": "1.0.0",
+  "description": "Firebase Cloud Functions for AfricaTrialUs",
+  "main": "index.js",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.4.0",
+    "firebase-functions": "^6.0.0",
+    "nodemailer": "^6.9.14"
+  }
+}
