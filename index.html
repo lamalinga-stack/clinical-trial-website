@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Search and explore clinical trials from ClinicalTrials.gov." />
+    <title>TrialScope | Clinical trial search</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="TrialScope home"><span class="brand-mark">+</span><span>Trial<span class="brand-accent">Scope</span></span></a>
+      <span class="source-label">Powered by ClinicalTrials.gov</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Clinical research, made clearer</p>
+          <h1>Find trials that move <em>health</em> forward.</h1>
+          <p class="hero-text">Explore registered clinical studies from around the world. Search by condition, treatment, location, or study ID.</p>
+        </div>
+        <form id="search-form" class="search-panel">
+          <label for="search-input">What are you looking for?</label>
+          <div class="search-row">
+            <input id="search-input" type="search" placeholder="e.g. diabetes, breast cancer, NCT045..." autocomplete="off" />
+            <button type="submit"><span>Search trials</span><span aria-hidden="true">→</span></button>
+          </div>
+          <div class="quick-searches" aria-label="Popular searches">
+            <span>Try:</span><button type="button" data-query="type 2 diabetes">Type 2 diabetes</button><button type="button" data-query="breast cancer">Breast cancer</button><button type="button" data-query="Alzheimer disease">Alzheimer disease</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="results-section" aria-live="polite">
+        <div class="results-toolbar">
+          <div><p class="eyebrow">Explore studies</p><h2 id="results-title">Featured clinical trials</h2><p id="result-count" class="muted">Loading the latest studies…</p></div>
+          <label class="sort-control">Sort by <select id="sort-select"><option value="LastUpdatePostDate">Recently updated</option><option value="StudyFirstPostDate">Recently posted</option><option value="OverallStatus">Study status</option></select></label>
+        </div>
+        <div id="status-message" class="status-message" hidden></div>
+        <div id="results" class="results-grid"></div>
+        <button id="load-more" class="load-more" type="button" hidden>Load more studies <span>↓</span></button>
+      </section>
+    </main>
+
+    <footer><span>TrialScope</span><span>Data sourced from <a href="https://clinicaltrials.gov/" target="_blank" rel="noreferrer">ClinicalTrials.gov</a></span><span>For research information only — not medical advice.</span></footer>
+    <script src="app.js" defer></script>
+  </body>
+</html>

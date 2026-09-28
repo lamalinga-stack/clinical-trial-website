@@ -1,2 +1,26 @@
-# clinical-trial-website
-A website for displaying and searching clinical trial data from ClinicalTrials.gov
+# TrialScope
+
+A responsive clinical-trial discovery website powered by the public [ClinicalTrials.gov API v2](https://clinicaltrials.gov/data-api/api).
+
+## Features
+
+- Search studies by condition, treatment, location, or NCT identifier
+- Browse featured studies on first load
+- View study status, study type, location, and NCT ID
+- Sort by recently updated, recently posted, or study status
+- Load additional results with API pagination
+- Responsive layout for mobile, tablet, and desktop
+
+## Run locally
+
+This is a static site. From the project directory, run any local web server, for example:
+
+```bash
+python3 -m http.server 8000
+```
+
+Then open http://localhost:8000 in your browser.
+
+## Data and disclaimer
+
+Study data is retrieved directly from ClinicalTrials.gov when the page loads. The site is for research information only and is not medical advice. Always consult a qualified healthcare professional about medical decisions.
