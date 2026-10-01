@@ -26,8 +26,8 @@ const participantForm = document.querySelector('#participant-form');
 let nextPageToken = '';
 let currentQuery = '';
 let currentCountry = '';
-let currentAfricanLanguages = []; // Track available languages for selected country
-let currentTranslationLanguage = null; // Track current translation language
+let currentTranslationLanguage = 'en';
+let currentAfricanLanguages = [];
 
 const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
 const formatStatus = status => (status || 'Unknown').toLowerCase().replaceAll('_', ' ');
@@ -39,92 +39,76 @@ function showLoading(append = false) {
 }
 
 function createLanguageTabs() {
-  // Remove existing language tabs if any
-  const existingTabs = document.querySelector('.african-language-tabs');
-  if (existingTabs) {
-    existingTabs.remove();
-  }
+  const existing = document.querySelector('.african-language-tabs');
+  if (existing) existing.remove();
 
-  if (!currentAfricanLanguages || currentAfricanLanguages.length === 0) {
-    return; // No languages for this country
-  }
+  const tabs = document.createElement('div');
+  tabs.className = 'african-language-tabs';
 
-  const tabContainer = document.createElement('div');
-  tabContainer.className = 'african-language-tabs';
-  tabContainer.setAttribute('aria-label', 'African language translation tabs');
-
-  // Create tabs for each available language
-  currentAfricanLanguages.forEach((langCode) => {
-    const tab = document.createElement('button');
-    tab.className = 'language-tab';
-    tab.dataset.language = langCode;
-    tab.textContent = `${getLanguageName(langCode)} (${getNativeLanguageName(langCode)})`;
-    tab.setAttribute('title', `Translate to ${getLanguageName(langCode)}`);
-
-    tab.addEventListener('click', async () => {
-      currentTranslationLanguage = langCode;
-      await translateResultsToLanguage(langCode);
-      updateLanguageTabStyles();
-    });
-
-    tabContainer.appendChild(tab);
-  });
-
-  // Add "English" tab to switch back
-  const englishTab = document.createElement('button');
-  englishTab.className = 'language-tab active';
-  englishTab.dataset.language = 'en';
-  englishTab.textContent = 'English';
-  englishTab.addEventListener('click', () => {
-    currentTranslationLanguage = null;
-    // Re-render results in English
-    searchTrials({ append: false });
+  const english = document.createElement('button');
+  english.type = 'button';
+  english.className = 'language-tab active';
+  english.textContent = 'English';
+  english.dataset.language = 'en';
+  english.addEventListener('click', () => {
+    currentTranslationLanguage = 'en';
     updateLanguageTabStyles();
+    renderTranslatedResults();
   });
-  tabContainer.insertBefore(englishTab, tabContainer.firstChild);
+  tabs.appendChild(english);
 
-  // Insert tabs before results
+  currentAfricanLanguages.forEach(code => {
+    const langBtn = document.createElement('button');
+    langBtn.type = 'button';
+    langBtn.className = 'language-tab';
+    langBtn.dataset.language = code;
+    langBtn.textContent = `${window.Vulavula?.getLanguageName(code) || code.toUpperCase()} (${window.Vulavula?.getNativeLanguageName(code) || code.toUpperCase()})`;
+    langBtn.addEventListener('click', async () => {
+      currentTranslationLanguage = code;
+      updateLanguageTabStyles();
+      await renderTranslatedResults();
+    });
+    tabs.appendChild(langBtn);
+  });
+
   const resultsSection = document.querySelector('.results-section');
   if (resultsSection) {
-    resultsSection.insertBefore(tabContainer, results);
+    resultsSection.insertBefore(tabs, resultsSection.querySelector('#results'));
   }
 }
 
 function updateLanguageTabStyles() {
-  const tabs = document.querySelectorAll('.language-tab');
-  tabs.forEach((tab) => {
-    if (tab.dataset.language === (currentTranslationLanguage || 'en')) {
-      tab.classList.add('active');
-    } else {
-      tab.classList.remove('active');
-    }
+  document.querySelectorAll('.language-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.language === currentTranslationLanguage);
   });
 }
 
-async function translateResultsToLanguage(languageCode) {
-  const resultCards = document.querySelectorAll('.trial-card');
-  statusMessage.textContent = `Translating results to ${getLanguageName(languageCode)}...`;
-  statusMessage.hidden = false;
+async function renderTranslatedResults() {
+  const cards = [...document.querySelectorAll('.trial-card')];
+  if (!cards.length) return;
 
-  for (const card of resultCards) {
-    const titleElement = card.querySelector('h3');
-    const linkElement = card.querySelector('.trial-link');
+  const targetLanguage = currentTranslationLanguage || 'en';
+  const originalTitles = cards.map(card => card.dataset.originalTitle || card.querySelector('h3')?.textContent || '');
 
-    if (titleElement) {
-      const originalTitle = titleElement.dataset.originalTitle || titleElement.textContent;
-      titleElement.dataset.originalTitle = originalTitle;
-      const translatedTitle = await getCachedTranslation(originalTitle, languageCode);
-      titleElement.textContent = translatedTitle;
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    const titleEl = card.querySelector('h3');
+    const linkEl = card.querySelector('.trial-link');
+    const originalTitle = originalTitles[i] || titleEl?.textContent || '';
+
+    if (titleEl) {
+      titleEl.textContent = targetLanguage === 'en'
+        ? originalTitle
+        : await window.Vulavula.getCachedTranslation(originalTitle, targetLanguage);
     }
 
-    if (linkElement) {
-      const linkText = t('viewStudyDetails');
-      const translatedLink = await getCachedTranslation(linkText, languageCode);
-      linkElement.textContent = translatedLink + ' →';
+    if (linkEl) {
+      const originalLinkText = linkEl.dataset.originalText || 'View study details';
+      linkEl.textContent = targetLanguage === 'en'
+        ? originalLinkText
+        : await window.Vulavula.getCachedTranslation(originalLinkText, targetLanguage) + ' →';
     }
   }
-
-  statusMessage.hidden = true;
 }
 
 function trialCard(study) {
@@ -134,15 +118,17 @@ function trialCard(study) {
   const design = p.designModule || {};
   const contacts = p.contactsLocationsModule || {};
   const locations = contacts.locations || [];
-  const location = locations[0]?.city ? `${locations[0].city}, ${locations[0].country || ''}` : t('locationNotSpecified');
+  const location = locations[0]?.city ? `${locations[0].city}, ${locations[0].country || ''}` : 'Location not specified';
   const statusText = formatStatus(status.overallStatus);
   const statusClass = statusText.includes('recruit') ? ' recruiting' : '';
-  const studyType = design.studyType ? `${design.studyType.charAt(0)}${design.studyType.slice(1).toLowerCase()} study` : t('clinicalStudy');
-  return `<article class="trial-card">
+  const studyType = design.studyType ? `${design.studyType.charAt(0)}${design.studyType.slice(1).toLowerCase()} study` : 'Clinical study';
+  const title = id.briefTitle || 'Untitled study';
+
+  return `<article class="trial-card" data-original-title="${escapeHTML(title)}">
     <div class="card-top"><span class="status${statusClass}">${escapeHTML(statusText)}</span><span class="nct">${escapeHTML(id.nctId || '')}</span></div>
-    <h3 data-original-title="${escapeHTML(id.briefTitle || 'Untitled study')}">${escapeHTML(id.briefTitle || 'Untitled study')}</h3>
+    <h3>${escapeHTML(title)}</h3>
     <div class="meta"><span><span class="meta-icon">◈</span>${escapeHTML(studyType)}</span><span><span class="meta-icon">⌖</span>${escapeHTML(location)}</span></div>
-    <a class="trial-link" href="https://clinicaltrials.gov/study/${encodeURIComponent(id.nctId || '')}" target="_blank" rel="noreferrer">${t('viewStudyDetails')} →</a>
+    <a class="trial-link" data-original-text="View study details" href="https://clinicaltrials.gov/study/${encodeURIComponent(id.nctId || '')}" target="_blank" rel="noreferrer">View study details →</a>
   </article>`;
 }
 
@@ -157,32 +143,40 @@ function buildSearchQuery() {
 async function searchTrials({ append = false } = {}) {
   showLoading(append);
   const searchQuery = buildSearchQuery();
-  const params = new URLSearchParams({ 'query.term': searchQuery, pageSize: '12', format: 'json', countTotal: 'true', sort: `${sortSelect.value}:desc` });
+  const params = new URLSearchParams({
+    'query.term': searchQuery,
+    pageSize: '12',
+    format: 'json',
+    countTotal: 'true',
+    sort: `${sortSelect.value}:desc`
+  });
   if (nextPageToken && append) params.set('pageToken', nextPageToken);
+
   try {
     const response = await fetch(`${API_URL}?${params}`);
     if (!response.ok) throw new Error(`Request failed (${response.status})`);
     const data = await response.json();
     const studies = data.studies || [];
+
     if (!append) results.innerHTML = '';
-    results.insertAdjacentHTML('beforeend', studies.length ? studies.map(trialCard).join('') : `<p class="muted">${t('noTrialsFound')}</p>`);
+    results.insertAdjacentHTML('beforeend', studies.length ? studies.map(trialCard).join('') : '<p class="muted">No trials found for your search. Try a different condition or country.</p>');
+
     nextPageToken = data.nextPageToken || '';
     loadMore.hidden = !nextPageToken;
-    resultCount.textContent = data.totalCount ? `${data.totalCount.toLocaleString()} ${t('trialsFound')}` : `${studies.length} ${t('trialsShown')}`;
-    resultsTitle.textContent = currentCountry ? `${t('trialsIn')} ${currentCountry}` : (currentQuery ? `${t('resultsFor')} "${currentQuery}"` : t('featuredAfricanTrials'));
+    resultCount.textContent = data.totalCount ? `${data.totalCount.toLocaleString()} trials found` : `${studies.length} trials shown`;
+    resultsTitle.textContent = currentCountry ? `Trials in ${currentCountry}` : (currentQuery ? `Results for "${currentQuery}"` : 'Featured African trials');
 
-    // Reset translation
-    currentTranslationLanguage = null;
+    currentAfricanLanguages = currentCountry ? (window.Vulavula?.getLanguagesForCountry(currentCountry) || []) : [];
+    createLanguageTabs();
+    updateLanguageTabStyles();
   } catch (error) {
     if (!append) results.innerHTML = '';
-    statusMessage.textContent = t('unableLoadTrials');
+    statusMessage.textContent = 'We could not load trials right now. Please check your connection and try again.';
     statusMessage.hidden = false;
-    resultCount.textContent = `Unable to load trials`;
+    resultCount.textContent = 'Unable to load trials';
     console.error(error);
   }
 }
-
-window.updateSearchResults = searchTrials;
 
 function runSearch(query) {
   currentQuery = query.trim();
@@ -190,7 +184,7 @@ function runSearch(query) {
   searchTrials();
 }
 
-participantForm.addEventListener('submit', async (event) => {
+participantForm.addEventListener('submit', event => {
   event.preventDefault();
   const formData = new FormData(participantForm);
   const country = formData.get('country')?.toString().trim();
@@ -201,29 +195,17 @@ participantForm.addEventListener('submit', async (event) => {
   const telephone = formData.get('telephone')?.toString().trim();
 
   if (!country || !diseaseArea || !email || !address || !code || !telephone) {
-    statusMessage.textContent = t('pleaseCompleteFields');
+    statusMessage.textContent = 'Please complete all fields so your contact details can be submitted.';
     statusMessage.hidden = false;
     return;
   }
 
-  try {
-    await firebase.firestore().collection('participantContacts').add({
-      country,
-      diseaseArea,
-      email,
-      address,
-      code,
-      telephone,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-    participantForm.reset();
-    statusMessage.textContent = t('contactSaved');
-    statusMessage.hidden = false;
-  } catch (error) {
-    statusMessage.textContent = t('errorSaving');
-    statusMessage.hidden = false;
-    console.error(error);
-  }
+  const summary = `Country: ${country}\nDisease area: ${diseaseArea}\nEmail: ${email}\nAddress: ${address}\nCode: ${code}\nTelephone: ${telephone}`;
+  const mailtoLink = `mailto:info@africatrialus.com?subject=${encodeURIComponent('New participant contact submission')}&body=${encodeURIComponent(summary)}`;
+  window.location.href = mailtoLink;
+  participantForm.reset();
+  statusMessage.textContent = 'Thank you. Your contact details have been prepared for submission.';
+  statusMessage.hidden = false;
 });
 
 form.addEventListener('submit', event => {
@@ -234,11 +216,6 @@ form.addEventListener('submit', event => {
 countrySelect.addEventListener('change', () => {
   currentCountry = countrySelect.value;
   nextPageToken = '';
-
-  // Update available African languages for this country
-  currentAfricanLanguages = getLanguagesForCountry(currentCountry);
-  createLanguageTabs();
-
   searchTrials();
 });
 
@@ -257,4 +234,13 @@ sortSelect.addEventListener('change', () => {
   searchTrials();
 });
 
+window.addEventListener('load', () => {
+  if (window.Vulavula) {
+    console.log('Vulavula helper available');
+  } else {
+    console.warn('Vulavula helper is missing');
+  }
+});
+
 runSearch('');
+
