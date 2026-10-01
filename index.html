@@ -166,13 +166,23 @@
               <iframe src="https://www.instagram.com/africatrialus/embed" width="100%" height="500" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
             </div>
           </div>
+
+          <div class="social-feed">
+            <div class="feed-header">
+              <span class="feed-icon">▶️</span>
+              <span class="feed-label" data-i18n="youtube">YouTube</span>
+            </div>
+            <div class="feed-content">
+              <iframe width="100%" height="500" src="https://www.youtube.com/embed/channel/UC_TheBreathroughClinicalTrials?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+          </div>
         </div>
       </section>
 
       <section class="results-section" aria-live="polite">
         <div class="results-toolbar">
-          <div><p class="eyebrow" data-i18n="clinicalTrials">Clinical Trials</p><h2 id="results-title" data-i18n="featuredAfricanTrials">Featured African trials</h2><p id="result-count" class="muted">Loading trials…</p></div>
-          <label class="sort-control"><span data-i18n="sortBy">Sort by</span> <select id="sort-select"><option value="LastUpdatePostDate" data-i18n="recentlyUpdated">Recently updated</option><option value="StudyFirstPostDate" data-i18n="recentlyPosted">Recently posted</option></select></label>
+          <div><p class="eyebrow" data-i18n="clinicalTrials">Clinical Trials</p><h2 id="results-title" data-i18n="featuredAfricanTrials">Featured African trials</h2><p id="result-count" class="muted">Showing featured trials</p></div>
+          <label class="sort-control"><span data-i18n="sortBy">Sort by</span> <select id="sort-select"><option value="LastUpdatePostDate" data-i18n="recentlyUpdated">Recently updated</option><option value="TargetEnrollment" data-i18n="enrollmentSize">Enrollment size</option><option value="StartDate" data-i18n="startDate">Start date</option></select></label>
         </div>
         <div id="status-message" class="status-message" hidden></div>
         <div id="results" class="results-grid"></div>
@@ -180,7 +190,7 @@
       </section>
     </main>
 
-    <footer><span>AfricaTrialUs</span><span><span data-i18n="dataSourced">Data sourced from</span> <a href="https://clinicaltrials.gov/" target="_blank" rel="noreferrer">ClinicalTrials.gov</a> <span data-i18n="and">and</span> <a href="https://pactr.samrc.ac.za/GIS_Viewer.aspx" target="_blank" rel="noreferrer">PACTR</a></span></footer>
+    <footer><span>AfricaTrialUs</span><span><span data-i18n="dataSourced">Data sourced from</span> <a href="https://clinicaltrials.gov/" target="_blank" rel="noreferrer">ClinicalTrials.gov</a> <span data-i18n="and">and</span> <a href="https://pactr.samrc.ac.za/" target="_blank" rel="noreferrer">PACTR</a></span></footer>
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <script src="vulavula.js" defer></script>
     <script src="i18n.js" defer></script>
