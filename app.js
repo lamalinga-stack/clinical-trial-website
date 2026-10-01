@@ -29,8 +29,15 @@ let currentCountry = '';
 let currentTranslationLanguage = 'en';
 let currentAfricanLanguages = [];
 
-const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
+const excludedStudyStatuses = new Set(['COMPLETED', 'SUSPENDED']);
+
+const escapeHTML = (value = '') => String(value).replace(/[&<>\'\"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
 const formatStatus = status => (status || 'Unknown').toLowerCase().replaceAll('_', ' ');
+
+const isVisibleStudy = study => {
+  const status = study?.protocolSection?.statusModule?.overallStatus;
+  return !excludedStudyStatuses.has((status || '').toUpperCase());
+};
 
 function showLoading(append = false) {
   if (!append) results.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
@@ -156,14 +163,18 @@ async function searchTrials({ append = false } = {}) {
     const response = await fetch(`${API_URL}?${params}`);
     if (!response.ok) throw new Error(`Request failed (${response.status})`);
     const data = await response.json();
-    const studies = data.studies || [];
+    const allStudies = data.studies || [];
+    const studies = allStudies.filter(isVisibleStudy);
+    const hiddenStatusCount = allStudies.length - studies.length;
 
     if (!append) results.innerHTML = '';
     results.insertAdjacentHTML('beforeend', studies.length ? studies.map(trialCard).join('') : '<p class="muted">No trials found for your search. Try a different condition or country.</p>');
 
     nextPageToken = data.nextPageToken || '';
     loadMore.hidden = !nextPageToken;
-    resultCount.textContent = data.totalCount ? `${data.totalCount.toLocaleString()} trials found` : `${studies.length} trials shown`;
+    const visibleCount = studies.length;
+    const totalCount = data.totalCount ? Math.max(data.totalCount - hiddenStatusCount, visibleCount) : visibleCount;
+    resultCount.textContent = data.totalCount ? `${totalCount.toLocaleString()} trials found` : `${visibleCount} trials shown`;
     resultsTitle.textContent = currentCountry ? `Trials in ${currentCountry}` : (currentQuery ? `Results for "${currentQuery}"` : 'Featured African trials');
 
     currentAfricanLanguages = currentCountry ? (window.Vulavula?.getLanguagesForCountry(currentCountry) || []) : [];
@@ -243,4 +254,3 @@ window.addEventListener('load', () => {
 });
 
 runSearch('');
-
