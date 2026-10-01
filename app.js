@@ -33,10 +33,27 @@ const excludedStudyStatuses = new Set(['COMPLETED', 'SUSPENDED']);
 
 const escapeHTML = (value = '') => String(value).replace(/[&<>\'\"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
 const formatStatus = status => (status || 'Unknown').toLowerCase().replaceAll('_', ' ');
+const normalizeCountry = value => (value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+
+const isAfricanStudy = study => {
+  const locations = study?.protocolSection?.contactsLocationsModule?.locations || [];
+  const countries = locations
+    .map(location => location?.country)
+    .filter(Boolean)
+    .map(normalizeCountry);
+
+  if (!countries.length) return false;
+
+  return countries.some(country =>
+    AFRICAN_COUNTRIES.some(africanCountry => normalizeCountry(africanCountry) === country)
+  );
+};
 
 const isVisibleStudy = study => {
-  const status = study?.protocolSection?.statusModule?.overallStatus;
-  return !excludedStudyStatuses.has((status || '').toUpperCase());
+  const status = (study?.protocolSection?.statusModule?.overallStatus || '').toUpperCase();
+  if (excludedStudyStatuses.has(status)) return false;
+  if (status !== 'RECRUITING') return false;
+  return isAfricanStudy(study);
 };
 
 function showLoading(append = false) {
@@ -165,17 +182,14 @@ async function searchTrials({ append = false } = {}) {
     const data = await response.json();
     const allStudies = data.studies || [];
     const studies = allStudies.filter(isVisibleStudy);
-    const hiddenStatusCount = allStudies.length - studies.length;
 
     if (!append) results.innerHTML = '';
-    results.insertAdjacentHTML('beforeend', studies.length ? studies.map(trialCard).join('') : '<p class="muted">No trials found for your search. Try a different condition or country.</p>');
+    results.insertAdjacentHTML('beforeend', studies.length ? studies.map(trialCard).join('') : '<p class="muted">No recruiting African trials found for your search.</p>');
 
     nextPageToken = data.nextPageToken || '';
     loadMore.hidden = !nextPageToken;
-    const visibleCount = studies.length;
-    const totalCount = data.totalCount ? Math.max(data.totalCount - hiddenStatusCount, visibleCount) : visibleCount;
-    resultCount.textContent = data.totalCount ? `${totalCount.toLocaleString()} trials found` : `${visibleCount} trials shown`;
-    resultsTitle.textContent = currentCountry ? `Trials in ${currentCountry}` : (currentQuery ? `Results for "${currentQuery}"` : 'Featured African trials');
+    resultCount.textContent = `${studies.length.toLocaleString()} recruiting African trials found`;
+    resultsTitle.textContent = currentCountry ? `Recruiting trials in ${currentCountry}` : (currentQuery ? `Recruiting African trials for "${currentQuery}"` : 'Recruiting African trials');
 
     currentAfricanLanguages = currentCountry ? (window.Vulavula?.getLanguagesForCountry(currentCountry) || []) : [];
     createLanguageTabs();
