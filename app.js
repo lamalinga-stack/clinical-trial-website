@@ -26,6 +26,8 @@ const participantForm = document.querySelector('#participant-form');
 let nextPageToken = '';
 let currentQuery = '';
 let currentCountry = '';
+let currentAfricanLanguages = []; // Track available languages for selected country
+let currentTranslationLanguage = null; // Track current translation language
 
 const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
 const formatStatus = status => (status || 'Unknown').toLowerCase().replaceAll('_', ' ');
@@ -33,6 +35,95 @@ const formatStatus = status => (status || 'Unknown').toLowerCase().replaceAll('_
 function showLoading(append = false) {
   if (!append) results.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
   loadMore.hidden = true;
+  statusMessage.hidden = true;
+}
+
+function createLanguageTabs() {
+  // Remove existing language tabs if any
+  const existingTabs = document.querySelector('.african-language-tabs');
+  if (existingTabs) {
+    existingTabs.remove();
+  }
+
+  if (!currentAfricanLanguages || currentAfricanLanguages.length === 0) {
+    return; // No languages for this country
+  }
+
+  const tabContainer = document.createElement('div');
+  tabContainer.className = 'african-language-tabs';
+  tabContainer.setAttribute('aria-label', 'African language translation tabs');
+
+  // Create tabs for each available language
+  currentAfricanLanguages.forEach((langCode) => {
+    const tab = document.createElement('button');
+    tab.className = 'language-tab';
+    tab.dataset.language = langCode;
+    tab.textContent = `${getLanguageName(langCode)} (${getNativeLanguageName(langCode)})`;
+    tab.setAttribute('title', `Translate to ${getLanguageName(langCode)}`);
+
+    tab.addEventListener('click', async () => {
+      currentTranslationLanguage = langCode;
+      await translateResultsToLanguage(langCode);
+      updateLanguageTabStyles();
+    });
+
+    tabContainer.appendChild(tab);
+  });
+
+  // Add "English" tab to switch back
+  const englishTab = document.createElement('button');
+  englishTab.className = 'language-tab active';
+  englishTab.dataset.language = 'en';
+  englishTab.textContent = 'English';
+  englishTab.addEventListener('click', () => {
+    currentTranslationLanguage = null;
+    // Re-render results in English
+    searchTrials({ append: false });
+    updateLanguageTabStyles();
+  });
+  tabContainer.insertBefore(englishTab, tabContainer.firstChild);
+
+  // Insert tabs before results
+  const resultsSection = document.querySelector('.results-section');
+  if (resultsSection) {
+    resultsSection.insertBefore(tabContainer, results);
+  }
+}
+
+function updateLanguageTabStyles() {
+  const tabs = document.querySelectorAll('.language-tab');
+  tabs.forEach((tab) => {
+    if (tab.dataset.language === (currentTranslationLanguage || 'en')) {
+      tab.classList.add('active');
+    } else {
+      tab.classList.remove('active');
+    }
+  });
+}
+
+async function translateResultsToLanguage(languageCode) {
+  const resultCards = document.querySelectorAll('.trial-card');
+  statusMessage.textContent = `Translating results to ${getLanguageName(languageCode)}...`;
+  statusMessage.hidden = false;
+
+  for (const card of resultCards) {
+    const titleElement = card.querySelector('h3');
+    const linkElement = card.querySelector('.trial-link');
+
+    if (titleElement) {
+      const originalTitle = titleElement.dataset.originalTitle || titleElement.textContent;
+      titleElement.dataset.originalTitle = originalTitle;
+      const translatedTitle = await getCachedTranslation(originalTitle, languageCode);
+      titleElement.textContent = translatedTitle;
+    }
+
+    if (linkElement) {
+      const linkText = t('viewStudyDetails');
+      const translatedLink = await getCachedTranslation(linkText, languageCode);
+      linkElement.textContent = translatedLink + ' →';
+    }
+  }
+
   statusMessage.hidden = true;
 }
 
@@ -49,7 +140,7 @@ function trialCard(study) {
   const studyType = design.studyType ? `${design.studyType.charAt(0)}${design.studyType.slice(1).toLowerCase()} study` : t('clinicalStudy');
   return `<article class="trial-card">
     <div class="card-top"><span class="status${statusClass}">${escapeHTML(statusText)}</span><span class="nct">${escapeHTML(id.nctId || '')}</span></div>
-    <h3>${escapeHTML(id.briefTitle || 'Untitled study')}</h3>
+    <h3 data-original-title="${escapeHTML(id.briefTitle || 'Untitled study')}">${escapeHTML(id.briefTitle || 'Untitled study')}</h3>
     <div class="meta"><span><span class="meta-icon">◈</span>${escapeHTML(studyType)}</span><span><span class="meta-icon">⌖</span>${escapeHTML(location)}</span></div>
     <a class="trial-link" href="https://clinicaltrials.gov/study/${encodeURIComponent(id.nctId || '')}" target="_blank" rel="noreferrer">${t('viewStudyDetails')} →</a>
   </article>`;
@@ -79,6 +170,9 @@ async function searchTrials({ append = false } = {}) {
     loadMore.hidden = !nextPageToken;
     resultCount.textContent = data.totalCount ? `${data.totalCount.toLocaleString()} ${t('trialsFound')}` : `${studies.length} ${t('trialsShown')}`;
     resultsTitle.textContent = currentCountry ? `${t('trialsIn')} ${currentCountry}` : (currentQuery ? `${t('resultsFor')} "${currentQuery}"` : t('featuredAfricanTrials'));
+
+    // Reset translation
+    currentTranslationLanguage = null;
   } catch (error) {
     if (!append) results.innerHTML = '';
     statusMessage.textContent = t('unableLoadTrials');
@@ -140,6 +234,11 @@ form.addEventListener('submit', event => {
 countrySelect.addEventListener('change', () => {
   currentCountry = countrySelect.value;
   nextPageToken = '';
+
+  // Update available African languages for this country
+  currentAfricanLanguages = getLanguagesForCountry(currentCountry);
+  createLanguageTabs();
+
   searchTrials();
 });
 

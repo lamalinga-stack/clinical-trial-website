@@ -65,6 +65,10 @@ body { margin:0; color:var(--ink); background:var(--cream); font-family:'DM Sans
 .feed-content { flex:1; overflow:auto; }
 .feed-content iframe { width:100% !important; border:none !important; }
 .results-section { max-width:1240px; margin:75px auto; padding:0 32px; }
+.african-language-tabs { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; padding-bottom:16px; border-bottom:2px solid var(--line); }
+.language-tab { padding:8px 16px; border:1px solid var(--line); border-radius:8px; background:white; color:var(--muted); font:600 12px 'DM Sans'; cursor:pointer; transition:all .2s ease; }
+.language-tab:hover { border-color:var(--teal); color:var(--teal); }
+.language-tab.active { background:var(--teal); color:white; border-color:var(--teal); }
 .results-toolbar { display:flex; align-items:end; justify-content:space-between; margin-bottom:28px; }
 .results-toolbar h2 { margin:0 0 5px; font:600 30px 'Space Grotesk'; letter-spacing:-.04em; }
 .muted { margin:0; color:var(--muted); font-size:13px; }
@@ -113,6 +117,7 @@ footer a { color:var(--teal); }
   .results-section { margin:52px auto; padding:0 20px; }
   .results-grid { grid-template-columns:1fr 1fr; }
   .results-toolbar { align-items:start; flex-direction:column; gap:18px; }
+  .african-language-tabs { justify-content:flex-start; overflow-x:auto; }
   footer { margin:0 20px; padding-left:0; padding-right:0; gap:12px; flex-wrap:wrap; } }
 @media (max-width:520px) { .search-row { flex-direction:column; }
   .search-row button { padding:13px; }
@@ -121,4 +126,6 @@ footer a { color:var(--teal); }
   .hero h1 { font-size:43px; }
   .header-actions { display:none; }
   .social-feeds { grid-template-columns:1fr; }
+  .african-language-tabs { gap:6px; }
+  .language-tab { padding:6px 12px; font-size:11px; }
 }
