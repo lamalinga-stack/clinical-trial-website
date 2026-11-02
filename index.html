@@ -9,38 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
-    <style>
-      .youtube-channel-card {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 500px;
-        background: linear-gradient(135deg, #ff0000 0%, #6d0000 100%);
-        border-radius: 14px;
-        text-align: center;
-        padding: 24px;
-        box-sizing: border-box;
-      }
-      .youtube-channel-card a {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        color: white;
-        text-decoration: none;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        font-size: 1.1rem;
-        text-transform: uppercase;
-        border: 2px solid rgba(255,255,255,0.4);
-        background: rgba(0,0,0,0.18);
-        padding: 18px 26px;
-        border-radius: 12px;
-      }
-      .youtube-channel-card .channel-icon {
-        font-size: 1.6rem;
-      }
-    </style>
   </head>
   <body>
     <header class="site-header">
@@ -93,6 +61,12 @@
               <option value="Angola">Angola</option>
               <option value="Botswana">Botswana</option>
               <option value="Namibia">Namibia</option>
+            </select>
+          </div>
+          <div class="filter-row">
+            <label for="province-select">Filter by province or state</label>
+            <select id="province-select" disabled>
+              <option value="">All provinces/states</option>
             </select>
           </div>
           <div class="quick-searches" aria-label="Popular searches">
@@ -198,26 +172,13 @@
               <iframe src="https://www.instagram.com/africatrialus/embed" width="100%" height="500" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
             </div>
           </div>
-
-          <div class="social-feed">
-            <div class="feed-header">
-              <span class="feed-icon">▶️</span>
-              <span class="feed-label" data-i18n="youtube">@TheBreakthroughClinicalTrials</span>
-            </div>
-            <div class="feed-content youtube-channel-card">
-              <a href="https://www.youtube.com/@TheBreakthroughClinicalTrials" target="_blank" rel="noreferrer">
-                <span class="channel-icon">▶</span>
-                <span>Watch on YouTube</span>
-              </a>
-            </div>
-          </div>
         </div>
       </section>
 
       <section class="results-section" aria-live="polite">
         <div class="results-toolbar">
-          <div><p class="eyebrow" data-i18n="clinicalTrials">Clinical Trials</p><h2 id="results-title" data-i18n="featuredAfricanTrials">Featured African trials</h2><p id="result-count" class="muted">Showing featured trials</p></div>
-          <label class="sort-control"><span data-i18n="sortBy">Sort by</span> <select id="sort-select"><option value="LastUpdatePostDate" data-i18n="recentlyUpdated">Recently updated</option><option value="TargetEnrollment" data-i18n="enrollmentSize">Enrollment size</option><option value="StartDate" data-i18n="startDate">Start date</option></select></label>
+          <div><p class="eyebrow" data-i18n="clinicalTrials">Clinical Trials</p><h2 id="results-title" data-i18n="featuredAfricanTrials">Featured African trials</h2><p id="result-count" class="muted">Loading trials…</p></div>
+          <label class="sort-control"><span data-i18n="sortBy">Sort by</span> <select id="sort-select"><option value="LastUpdatePostDate" data-i18n="recentlyUpdated">Recently updated</option><option value="FirstPostDate" data-i18n="newlyAdded">Newly added</option></select></label>
         </div>
         <div id="status-message" class="status-message" hidden></div>
         <div id="results" class="results-grid"></div>
@@ -225,7 +186,7 @@
       </section>
     </main>
 
-    <footer><span>AfricaTrialUs</span><span><span data-i18n="dataSourced">Data sourced from</span> <a href="https://clinicaltrials.gov/" target="_blank" rel="noreferrer">ClinicalTrials.gov</a> <span data-i18n="and">and</span> <a href="https://pactr.samrc.ac.za/" target="_blank" rel="noreferrer">PACTR</a></span></footer>
+    <footer><span>AfricaTrialUs</span><span><span data-i18n="dataSourced">Data sourced from</span> <a href="https://clinicaltrials.gov/" target="_blank" rel="noreferrer">ClinicalTrials.gov</a> <span>&</span> <a href="https://pactr.samrc.ac.za/GIS_Viewer.aspx" target="_blank" rel="noreferrer">PACTR</a></span></footer>
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <script src="vulavula.js" defer></script>
     <script src="i18n.js" defer></script>
