@@ -9,6 +9,38 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
+    <style>
+      .tiktok-card {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 500px;
+        background: linear-gradient(135deg, #000000 0%, #1f1f1f 100%);
+        border-radius: 14px;
+        text-align: center;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+      .tiktok-card a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        color: white;
+        text-decoration: none;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        border: 2px solid rgba(255,255,255,0.35);
+        background: rgba(255,255,255,0.08);
+        padding: 18px 26px;
+        border-radius: 12px;
+      }
+      .tiktok-card .channel-icon {
+        font-size: 1.6rem;
+      }
+    </style>
   </head>
   <body>
     <header class="site-header">
@@ -170,6 +202,19 @@
             </div>
             <div class="feed-content">
               <iframe src="https://www.instagram.com/africatrialus/embed" width="100%" height="500" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+            </div>
+          </div>
+
+          <div class="social-feed">
+            <div class="feed-header">
+              <span class="feed-icon">♪</span>
+              <span class="feed-label">TikTok</span>
+            </div>
+            <div class="feed-content tiktok-card">
+              <a href="https://www.tiktok.com/@clinicalresearchfastrack" target="_blank" rel="noreferrer">
+                <span class="channel-icon">♪</span>
+                <span>Watch on TikTok</span>
+              </a>
             </div>
           </div>
         </div>
