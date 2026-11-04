@@ -14,7 +14,7 @@ const AFRICAN_COUNTRIES = [
 
 const provinceOptions = {
   'South Africa': ['Eastern Cape', 'Free State', 'Gauteng', 'KwaZulu-Natal', 'Limpopo', 'Mpumalanga', 'North West', 'Northern Cape', 'Western Cape'],
-  'Nigeria': ['Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno', 'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'Gombe', 'Imo', 'Jigawa', 'Kaduna', 'Kano', 'Katsina', 'Kebbi', 'Kogi', 'Kwara', 'Lagos', 'Nasarawa', 'Niger', 'Ogun', 'Ondo', 'Osun', 'Oyo', 'Plateau', 'Rivers', 'Sokoto', 'Taraba', 'Yobe', 'Zamfara'],
+  'Nigeria': ['Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno', 'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'Gombe', 'Imo', 'Jigawa', 'Kaduna', 'Kano'],
   'Kenya': ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Kajiado', 'Kiambu', 'Machakos', 'Uasin Gishu', 'Kakamega', 'Meru'],
   'Uganda': ['Central', 'Eastern', 'Western', 'Northern'],
   'Ethiopia': ['Addis Ababa', 'Amhara', 'Oromia', 'Somali', 'Tigray', 'Afar', 'SNNPR', 'Harari', 'Dire Dawa'],
@@ -60,26 +60,18 @@ let currentCountry = '';
 let currentProvince = '';
 let currentTranslationLanguage = 'en';
 let currentAfricanLanguages = [];
+let requestController = null;
+let searchSequence = 0;
 
 const excludedStudyStatuses = new Set(['COMPLETED', 'SUSPENDED']);
-
-const escapeHTML = (value = '') => String(value).replace(/[&<>\'\"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
+const escapeHTML = (value = '') => String(value).replace(/[&<>\'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
 const formatStatus = status => (status || 'Unknown').toLowerCase().replaceAll('_', ' ');
 const normalizeCountry = value => (value || '').trim().replace(/\s+/g, ' ').toLowerCase();
 const normalizeLocationValue = value => (value || '').trim().replace(/\s+/g, ' ').toLowerCase();
 
 const isAfricanStudy = study => {
   const locations = study?.protocolSection?.contactsLocationsModule?.locations || [];
-  const countries = locations
-    .map(location => location?.country)
-    .filter(Boolean)
-    .map(normalizeCountry);
-
-  if (!countries.length) return false;
-
-  return countries.some(country =>
-    AFRICAN_COUNTRIES.some(africanCountry => normalizeCountry(africanCountry) === country)
-  );
+  return locations.some(location => AFRICAN_COUNTRIES.some(country => normalizeCountry(country) === normalizeCountry(location?.country)));
 };
 
 const countryMatchesStudy = (study, country) => {
@@ -91,17 +83,12 @@ const countryMatchesStudy = (study, country) => {
 const provinceMatchesStudy = (study, province) => {
   if (!province) return true;
   const locations = study?.protocolSection?.contactsLocationsModule?.locations || [];
-  return locations.some(location => {
-    const locationProvince = location?.state || location?.province || location?.county || location?.region || '';
-    return normalizeLocationValue(locationProvince) === normalizeLocationValue(province);
-  });
+  return locations.some(location => normalizeLocationValue(location?.state || location?.province || location?.county || location?.region) === normalizeLocationValue(province));
 };
 
 const isVisibleStudy = study => {
   const status = (study?.protocolSection?.statusModule?.overallStatus || '').toUpperCase();
-  if (excludedStudyStatuses.has(status)) return false;
-  if (status !== 'RECRUITING') return false;
-  return isAfricanStudy(study);
+  return !excludedStudyStatuses.has(status) && status === 'RECRUITING' && isAfricanStudy(study);
 };
 
 function showLoading(append = false) {
@@ -111,15 +98,12 @@ function showLoading(append = false) {
 }
 
 function createLanguageTabs() {
-  const existing = document.querySelector('.african-language-tabs');
-  if (existing) existing.remove();
-
+  document.querySelector('.african-language-tabs')?.remove();
   const tabs = document.createElement('div');
   tabs.className = 'african-language-tabs';
-
   const english = document.createElement('button');
   english.type = 'button';
-  english.className = 'language-tab active';
+  english.className = 'language-tab';
   english.textContent = 'English';
   english.dataset.language = 'en';
   english.addEventListener('click', () => {
@@ -130,57 +114,37 @@ function createLanguageTabs() {
   tabs.appendChild(english);
 
   currentAfricanLanguages.forEach(code => {
-    const langBtn = document.createElement('button');
-    langBtn.type = 'button';
-    langBtn.className = 'language-tab';
-    langBtn.dataset.language = code;
-    langBtn.textContent = `${window.Vulavula?.getLanguageName(code) || code.toUpperCase()} (${window.Vulavula?.getNativeLanguageName(code) || code.toUpperCase()})`;
-    langBtn.addEventListener('click', async () => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'language-tab';
+    button.dataset.language = code;
+    button.textContent = `${window.Vulavula?.getLanguageName(code) || code.toUpperCase()} (${window.Vulavula?.getNativeLanguageName(code) || code.toUpperCase()})`;
+    button.addEventListener('click', async () => {
       currentTranslationLanguage = code;
       updateLanguageTabStyles();
       await renderTranslatedResults();
     });
-    tabs.appendChild(langBtn);
+    tabs.appendChild(button);
   });
-
-  const resultsSection = document.querySelector('.results-section');
-  if (resultsSection) {
-    resultsSection.insertBefore(tabs, resultsSection.querySelector('#results'));
-  }
+  document.querySelector('.results-section')?.insertBefore(tabs, results);
+  updateLanguageTabStyles();
 }
 
 function updateLanguageTabStyles() {
-  document.querySelectorAll('.language-tab').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.language === currentTranslationLanguage);
-  });
+  document.querySelectorAll('.language-tab').forEach(button => button.classList.toggle('active', button.dataset.language === currentTranslationLanguage));
 }
 
 async function renderTranslatedResults() {
+  if (currentTranslationLanguage !== 'en' && !window.Vulavula) return;
   const cards = [...document.querySelectorAll('.trial-card')];
-  if (!cards.length) return;
-
-  const targetLanguage = currentTranslationLanguage || 'en';
-  const originalTitles = cards.map(card => card.dataset.originalTitle || card.querySelector('h3')?.textContent || '');
-
-  for (let i = 0; i < cards.length; i++) {
-    const card = cards[i];
-    const titleEl = card.querySelector('h3');
-    const linkEl = card.querySelector('.trial-link');
-    const originalTitle = originalTitles[i] || titleEl?.textContent || '';
-
-    if (titleEl) {
-      titleEl.textContent = targetLanguage === 'en'
-        ? originalTitle
-        : await window.Vulavula.getCachedTranslation(originalTitle, targetLanguage);
-    }
-
-    if (linkEl) {
-      const originalLinkText = linkEl.dataset.originalText || 'View study details';
-      linkEl.textContent = targetLanguage === 'en'
-        ? originalLinkText
-        : await window.Vulavula.getCachedTranslation(originalLinkText, targetLanguage) + ' →';
-    }
-  }
+  const translations = cards.map(async card => {
+    const title = card.querySelector('h3');
+    const link = card.querySelector('.trial-link');
+    const originalTitle = card.dataset.originalTitle || title?.textContent || '';
+    if (title) title.textContent = currentTranslationLanguage === 'en' ? originalTitle : await window.Vulavula.getCachedTranslation(originalTitle, currentTranslationLanguage);
+    if (link) link.textContent = currentTranslationLanguage === 'en' ? 'View study details' : `${await window.Vulavula.getCachedTranslation('View study details', currentTranslationLanguage)} →`;
+  });
+  await Promise.all(translations);
 }
 
 function trialCard(study) {
@@ -190,83 +154,96 @@ function trialCard(study) {
   const design = p.designModule || {};
   const contacts = p.contactsLocationsModule || {};
   const locations = contacts.locations || [];
-  const location = locations[0]?.city ? `${locations[0].city}, ${locations[0].country || ''}` : 'Location not specified';
+  const conditionModule = p.conditionsModule || {};
+  const studyType = design.studyType ? `${design.studyType.charAt(0)}${design.studyType.slice(1).toLowerCase()} study` : 'Study type not listed';
+  const title = id.briefTitle || 'Study title not listed';
   const statusText = formatStatus(status.overallStatus);
   const statusClass = statusText.includes('recruit') ? ' recruiting' : '';
-  const studyType = design.studyType ? `${design.studyType.charAt(0)}${design.studyType.slice(1).toLowerCase()} study` : 'Clinical study';
-  const title = id.briefTitle || 'Untitled study';
+  const studyId = id.nctId || '';
+  const condition = (conditionModule.conditions || []).join(', ') || 'Health condition not listed';
+  const locationMarkup = locations.length
+    ? locations.map(location => {
+        const parts = [location.facility, location.city, location.state || location.province, location.country].filter(Boolean);
+        const address = parts.length ? parts.join(', ') : 'Study location not listed';
+        const siteContact = location?.contacts?.[0] || {};
+        const siteName = siteContact.name || '';
+        const sitePhone = siteContact.phone || '';
+        const siteEmail = siteContact.email || '';
+        const contactMarkup = [
+          siteName ? `<span class="site-contact-name">${escapeHTML(siteName)}</span>` : '',
+          sitePhone ? `<a href="tel:${escapeHTML(sitePhone.replace(/[^\d+]/g, ''))}">${escapeHTML(sitePhone)}</a>` : '',
+          siteEmail ? `<a href="mailto:${escapeHTML(siteEmail)}">${escapeHTML(siteEmail)}</a>` : ''
+        ].filter(Boolean).join(' · ');
+        return `<li><span class="site-location">${escapeHTML(address)}</span>${contactMarkup ? `<span class="site-contact">${contactMarkup}</span>` : '<span class="site-contact">Contact details not provided in the registry</span>'}</li>`;
+      }).join('')
+    : '<li><span class="site-location">Study locations are not listed in the registry.</span><span class="site-contact">Open the official record to check for updates.</span></li>';
 
-  return `<article class="trial-card" data-original-title="${escapeHTML(title)}">
-    <div class="card-top"><span class="status${statusClass}">${escapeHTML(statusText)}</span><span class="nct">${escapeHTML(id.nctId || '')}</span></div>
+  return `<article class="trial-card" data-original-title="${escapeHTML(title)}" data-condition="${escapeHTML(condition)}">
+    <div class="card-top"><span class="status${statusClass}">${escapeHTML(statusText)}</span><span class="nct">${escapeHTML(studyId)}</span></div>
     <h3>${escapeHTML(title)}</h3>
-    <div class="meta"><span><span class="meta-icon">◈</span>${escapeHTML(studyType)}</span><span><span class="meta-icon">⌖</span>${escapeHTML(location)}</span></div>
-    <a class="trial-link" data-original-text="View study details" href="https://clinicaltrials.gov/study/${encodeURIComponent(id.nctId || '')}" target="_blank" rel="noreferrer">View study details →</a>
+    <p class="trial-condition"><strong>About this study:</strong> ${escapeHTML(condition)}</p>
+    <div class="meta"><span><span class="meta-icon">◈</span>${escapeHTML(studyType)}</span></div>
+    <details class="trial-sites"><summary>Study locations and contact details (${locations.length || 'not listed'})</summary><ul>${locationMarkup}</ul></details>
+    <a class="trial-link" data-original-text="View study details" href="https://clinicaltrials.gov/study/${encodeURIComponent(studyId)}" target="_blank" rel="noopener noreferrer">View official study details →</a>
   </article>`;
 }
 
 function buildSearchQuery() {
   let query = currentQuery || '*';
-  if (currentCountry) {
-    query = query === '*' ? currentCountry : `${query} AND ${currentCountry}`;
-  }
+  if (currentCountry) query = query === '*' ? currentCountry : `${query} AND ${currentCountry}`;
   return query;
 }
 
 function updateResultsHeader() {
   const parts = [];
-
   if (currentCountry) parts.push(currentCountry);
   if (currentProvince) parts.push(currentProvince);
   if (currentQuery) parts.push(`"${currentQuery}"`);
-
-  if (!parts.length) {
-    resultsTitle.textContent = 'Recruiting African trials';
-    return;
-  }
-
-  const label = parts.join(' • ');
-  resultsTitle.textContent = `Recruiting trials in ${label}`;
+  resultsTitle.textContent = parts.length ? `Recruiting trials in ${parts.join(' • ')}` : 'Recruiting African trials';
 }
 
 async function searchTrials({ append = false } = {}) {
+  const thisSearch = ++searchSequence;
+  if (requestController) requestController.abort();
+  requestController = new AbortController();
+  const signal = requestController.signal;
   showLoading(append);
-  const searchQuery = buildSearchQuery();
   const params = new URLSearchParams({
-    'query.term': searchQuery,
+    'query.term': buildSearchQuery(),
     pageSize: '12',
     format: 'json',
-    countTotal: 'true',
+    countTotal: 'false',
+    fields: 'NCTId,BriefTitle,OverallStatus,StudyType,Condition,LocationFacility,LocationCity,LocationState,LocationCountry,LocationContactName,LocationContactPhone,LocationContactEMail,CentralContactName,CentralContactPhone,CentralContactEMail',
     sort: `${sortSelect.value}:desc`
   });
   if (nextPageToken && append) params.set('pageToken', nextPageToken);
 
   try {
-    const response = await fetch(`${API_URL}?${params}`);
+    const response = await fetch(`${API_URL}?${params}`, { signal });
     if (!response.ok) throw new Error(`Request failed (${response.status})`);
     const data = await response.json();
-    const allStudies = data.studies || [];
-    const studies = allStudies
-      .filter(isVisibleStudy)
+    if (thisSearch !== searchSequence) return;
+
+    const studies = (data.studies || []).filter(isVisibleStudy)
       .filter(study => countryMatchesStudy(study, currentCountry))
       .filter(study => provinceMatchesStudy(study, currentProvince));
-
     if (!append) results.innerHTML = '';
     results.insertAdjacentHTML('beforeend', studies.length ? studies.map(trialCard).join('') : '<p class="muted">No recruiting African trials found for your search.</p>');
-
     nextPageToken = data.nextPageToken || '';
     loadMore.hidden = !nextPageToken;
     resultCount.textContent = `${studies.length.toLocaleString()} recruiting African trials found`;
     updateResultsHeader();
-
     currentAfricanLanguages = currentCountry ? (window.Vulavula?.getLanguagesForCountry(currentCountry) || []) : [];
     createLanguageTabs();
-    updateLanguageTabStyles();
   } catch (error) {
+    if (error.name === 'AbortError' || thisSearch !== searchSequence) return;
     if (!append) results.innerHTML = '';
-    statusMessage.textContent = 'We could not load trials right now. Please check your connection and try again.';
+    statusMessage.textContent = 'We could not load studies right now. Please check your connection and try again.';
     statusMessage.hidden = false;
-    resultCount.textContent = 'Unable to load trials';
+    resultCount.textContent = 'Unable to load studies';
     console.error(error);
+  } finally {
+    if (thisSearch === searchSequence) requestController = null;
   }
 }
 
@@ -295,16 +272,13 @@ participantForm.addEventListener('submit', event => {
   const address = formData.get('address')?.toString().trim();
   const code = formData.get('code')?.toString().trim();
   const telephone = formData.get('telephone')?.toString().trim();
-
   if (!country || !diseaseArea || !email || !address || !code || !telephone) {
     statusMessage.textContent = 'Please complete all fields so your contact details can be submitted.';
     statusMessage.hidden = false;
     return;
   }
-
   const summary = `Country: ${country}\nDisease area: ${diseaseArea}\nEmail: ${email}\nAddress: ${address}\nCode: ${code}\nTelephone: ${telephone}`;
-  const mailtoLink = `mailto:info@africatrialus.com?subject=${encodeURIComponent('New participant contact submission')}&body=${encodeURIComponent(summary)}`;
-  window.location.href = mailtoLink;
+  window.location.href = `mailto:info@africatrialus.com?subject=${encodeURIComponent('New participant contact submission')}&body=${encodeURIComponent(summary)}`;
   participantForm.reset();
   statusMessage.textContent = 'Thank you. Your contact details have been prepared for submission.';
   statusMessage.hidden = false;
@@ -320,7 +294,6 @@ countrySelect.addEventListener('change', () => {
   currentProvince = '';
   provinceSelect.innerHTML = '<option value="">All provinces/states</option>';
   provinceSelect.disabled = true;
-
   if (currentCountry && provinceOptions[currentCountry]) {
     provinceOptions[currentCountry].forEach(province => {
       const option = document.createElement('option');
@@ -330,7 +303,6 @@ countrySelect.addEventListener('change', () => {
     });
     provinceSelect.disabled = false;
   }
-
   nextPageToken = '';
   searchTrials();
 });
@@ -346,22 +318,11 @@ document.querySelectorAll('[data-query]').forEach(button => button.addEventListe
   runSearch(button.dataset.query);
 }));
 
-pactrButton.addEventListener('click', () => {
-  window.open(PACTR_URL, '_blank', 'noopener,noreferrer');
-});
-
+pactrButton.addEventListener('click', () => window.open(PACTR_URL, '_blank', 'noopener,noreferrer'));
 loadMore.addEventListener('click', () => searchTrials({ append: true }));
 sortSelect.addEventListener('change', () => {
   nextPageToken = '';
   searchTrials();
-});
-
-window.addEventListener('load', () => {
-  if (window.Vulavula) {
-    console.log('Vulavula helper available');
-  } else {
-    console.warn('Vulavula helper is missing');
-  }
 });
 
 const clearBtn = document.createElement('button');
@@ -369,7 +330,6 @@ clearBtn.type = 'button';
 clearBtn.className = 'clear-filters';
 clearBtn.textContent = 'Clear filters';
 clearBtn.addEventListener('click', clearFilters);
-
 const formActions = document.createElement('div');
 formActions.className = 'filter-actions';
 formActions.appendChild(clearBtn);
