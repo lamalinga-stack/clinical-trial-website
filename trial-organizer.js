@@ -1,339 +1,198 @@
 (() => {
   const results = document.querySelector('#results');
   const resultsToolbar = document.querySelector('.results-toolbar');
-
   if (!results || !resultsToolbar) return;
 
-  const sheet = document.createElement('style');
-  sheet.textContent = `
-    .trial-organizer-shell {
-      margin: 18px 0 24px;
-      padding: 18px;
-      border: 1px solid rgba(15, 76, 88, 0.12);
-      border-radius: 18px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(234,247,249,0.92));
-      box-shadow: 0 18px 40px rgba(20, 54, 64, 0.06);
-    }
-    .trial-organizer-toolbar {
-      display: grid;
-      grid-template-columns: minmax(180px, 2fr) minmax(150px, 1fr) minmax(160px, 1fr);
-      gap: 12px;
-      align-items: end;
-    }
-    .trial-organizer-field {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-      color: var(--muted, #56737d);
-    }
-    .trial-organizer-field input,
-    .trial-organizer-field select {
-      width: 100%;
-      min-height: 42px;
-      padding: 10px 12px;
-      border: 1px solid rgba(13, 84, 97, 0.16);
-      border-radius: 10px;
-      background: rgba(255,255,255,0.9);
-      color: var(--ink, #12313f);
-      font-size: 13px;
-      font-family: inherit;
-      outline: none;
-    }
-    .trial-organizer-field input:focus,
-    .trial-organizer-field select:focus {
-      border-color: rgba(8,124,145,0.55);
-      box-shadow: 0 0 0 3px rgba(8,124,145,0.12);
-    }
-    .trial-organizer-summary {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(120px, 1fr));
-      gap: 12px;
-      margin-top: 18px;
-    }
-    .trial-organizer-metric {
-      padding: 14px 16px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.7);
-      border: 1px solid rgba(15, 76, 88, 0.08);
-    }
-    .trial-organizer-metric .label {
-      display: block;
-      color: var(--muted, #56737d);
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-    .trial-organizer-metric strong {
-      display: block;
-      margin-top: 8px;
-      color: var(--ink, #12313f);
-      font-size: 1.25rem;
-      line-height: 1.1;
-    }
-    .trial-organizer-groups {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      margin-top: 18px;
-    }
-    .trial-organizer-group {
-      padding: 12px;
-      border: 1px solid rgba(15, 76, 88, 0.08);
-      border-radius: 12px;
-      background: rgba(255,255,255,0.7);
-    }
-    .trial-organizer-group-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 10px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--ink, #12313f);
-    }
-    .trial-organizer-group-header span:last-child {
-      color: var(--muted, #56737d);
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .trial-organizer-group button {
-      width: 100%;
-      border: 0;
-      background: rgba(8,124,145,0.07);
-      color: var(--ink, #12313f);
-      padding: 9px 10px;
-      border-radius: 8px;
-      text-align: left;
-      cursor: pointer;
-      transition: background .2s ease, transform .2s ease;
-      font: inherit;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .trial-organizer-group button:hover {
-      background: rgba(8,124,145,0.12);
-      transform: translateY(-1px);
-    }
-    @media (max-width: 700px) {
-      .trial-organizer-toolbar,
-      .trial-organizer-summary {
-        grid-template-columns: 1fr;
-      }
-    }
+  const styles = document.createElement('style');
+  styles.textContent = `
+    .trial-organizer-shell { margin:18px 0 24px; padding:18px; border:1px solid rgba(15,76,88,.12); border-radius:18px; background:linear-gradient(180deg,#fff,#eaf7f9); box-shadow:0 12px 30px rgba(20,54,64,.05); }
+    .trial-organizer-toolbar { display:grid; grid-template-columns:minmax(180px,2fr) minmax(150px,1fr) minmax(160px,1fr); gap:12px; align-items:end; }
+    .trial-organizer-field { display:flex; flex-direction:column; gap:8px; color:var(--muted,#56737d); font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+    .trial-organizer-field input,.trial-organizer-field select { width:100%; min-height:42px; padding:10px 12px; border:1px solid rgba(13,84,97,.16); border-radius:10px; background:#fff; color:var(--ink,#12313f); font:inherit; font-size:13px; }
+    .trial-organizer-summary { display:grid; grid-template-columns:repeat(4,minmax(110px,1fr)); gap:10px; margin-top:16px; }
+    .trial-organizer-metric { padding:12px 14px; border:1px solid rgba(15,76,88,.08); border-radius:12px; background:rgba(255,255,255,.75); }
+    .trial-organizer-metric .label { display:block; color:var(--muted,#56737d); font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+    .trial-organizer-metric strong { display:block; margin-top:7px; color:var(--ink,#12313f); font-size:1.15rem; }
+    .trial-organizer-groups { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; margin-top:14px; }
+    .trial-organizer-group { padding:11px; border:1px solid rgba(15,76,88,.08); border-radius:12px; background:rgba(255,255,255,.75); }
+    .trial-organizer-group-header { display:flex; justify-content:space-between; gap:8px; margin-bottom:8px; color:var(--ink,#12313f); font-size:12px; font-weight:700; }
+    .trial-organizer-group-header span:last-child { color:var(--muted,#56737d); font-weight:600; }
+    .trial-organizer-group button { width:100%; margin-top:5px; padding:8px 9px; border:0; border-radius:8px; background:rgba(8,124,145,.07); color:var(--ink,#12313f); text-align:left; font:inherit; font-size:11px; cursor:pointer; }
+    .trial-organizer-group button:hover { background:rgba(8,124,145,.14); }
+    .trial-organizer-more { margin:8px 0 0; color:var(--muted,#56737d); font-size:10px; }
+    .trial-organizer-empty { grid-column:1/-1; margin:0; color:var(--muted,#56737d); font-size:12px; }
+    .trial-card.organizer-highlight { outline:3px solid rgba(8,124,145,.35); outline-offset:3px; }
+    @media(max-width:700px) { .trial-organizer-toolbar { grid-template-columns:1fr; } .trial-organizer-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } }
   `;
-  document.head.appendChild(sheet);
+  document.head.appendChild(styles);
 
   const shell = document.createElement('section');
   shell.className = 'trial-organizer-shell';
+  shell.setAttribute('aria-label', 'Find and organize loaded trials');
   shell.innerHTML = `
     <div class="trial-organizer-toolbar">
-      <label class="trial-organizer-field">
-        Search loaded trials
-        <input type="search" id="trial-organizer-search" placeholder="Title, location, or NCT ID" />
+      <label class="trial-organizer-field">Find in these results
+        <input type="search" id="trial-organizer-search" placeholder="Condition, location, or study ID" autocomplete="off">
       </label>
-      <label class="trial-organizer-field">
-        Status filter
+      <label class="trial-organizer-field">Show studies
         <select id="trial-organizer-status">
-          <option value="all">All statuses</option>
+          <option value="all">All loaded studies</option>
           <option value="recruiting">Recruiting only</option>
-          <option value="active">Active / ongoing</option>
         </select>
       </label>
-      <label class="trial-organizer-field">
-        Group by
+      <label class="trial-organizer-field">Browse by
         <select id="trial-organizer-group">
           <option value="country">Country</option>
-          <option value="disease">Disease area</option>
-          <option value="status">Status</option>
+          <option value="disease">Health condition</option>
+          <option value="status">Recruitment status</option>
           <option value="type">Study type</option>
         </select>
       </label>
     </div>
-    <div class="trial-organizer-summary">
-      <div class="trial-organizer-metric"><span class="label">Total</span><strong data-organizer-metric="total">0</strong></div>
-      <div class="trial-organizer-metric"><span class="label">Countries</span><strong data-organizer-metric="countries">0</strong></div>
-      <div class="trial-organizer-metric"><span class="label">Recruiting</span><strong data-organizer-metric="recruiting">0</strong></div>
-      <div class="trial-organizer-metric"><span class="label">Focus</span><strong data-organizer-metric="focus">—</strong></div>
+    <div class="trial-organizer-summary" aria-live="polite">
+      <div class="trial-organizer-metric"><span class="label">Studies shown</span><strong data-metric="total">0</strong></div>
+      <div class="trial-organizer-metric"><span class="label">Countries</span><strong data-metric="countries">0</strong></div>
+      <div class="trial-organizer-metric"><span class="label">Recruiting</span><strong data-metric="recruiting">0</strong></div>
+      <div class="trial-organizer-metric"><span class="label">Most common topic</span><strong data-metric="focus">—</strong></div>
     </div>
     <div class="trial-organizer-groups" id="trial-organizer-groups"></div>
   `;
-
   resultsToolbar.insertAdjacentElement('afterend', shell);
 
   const searchInput = shell.querySelector('#trial-organizer-search');
   const statusFilter = shell.querySelector('#trial-organizer-status');
   const groupFilter = shell.querySelector('#trial-organizer-group');
   const groupsContainer = shell.querySelector('#trial-organizer-groups');
+  const metric = name => shell.querySelector(`[data-metric="${name}"]`);
+  const metadata = new WeakMap();
+  let refreshTimer;
+  let scheduledFrame = false;
 
-  const metricEls = {
-    total: shell.querySelector('[data-organizer-metric="total"]'),
-    countries: shell.querySelector('[data-organizer-metric="countries"]'),
-    recruiting: shell.querySelector('[data-organizer-metric="recruiting"]'),
-    focus: shell.querySelector('[data-organizer-metric="focus"]')
+  const normalize = value => (value || '').trim().replace(/\s+/g, ' ');
+  const getMeta = card => {
+    if (metadata.has(card)) return metadata.get(card);
+
+    const title = normalize(card.querySelector('h3')?.textContent) || 'Study details';
+    const meta = [...card.querySelectorAll('.meta > span')].map(item => normalize(item.textContent));
+    const studyType = meta[0]?.replace(/^◈\s*/, '') || 'Study type not listed';
+    const location = meta[1]?.replace(/^⌖\s*/, '') || 'Location not listed';
+    const country = location.includes(',') ? location.split(',').pop().trim() : location;
+    const status = normalize(card.querySelector('.status')?.textContent) || 'Status not listed';
+    const studyId = normalize(card.querySelector('.nct')?.textContent);
+    // Use the registry's condition field when available; the title is only a rough browsing category.
+    const condition = normalize(card.dataset.condition) || 'Health topic not specified';
+    const value = { title, studyType, location, country, status, studyId, condition };
+    metadata.set(card, value);
+    return value;
   };
 
-  const normalize = value => (value || '').toString().trim().replace(/\s+/g, ' ');
-
-  const inferDisease = title => {
-    const haystack = normalize(title).toLowerCase();
-    const rules = [
-      ['malaria', 'Malaria'],
-      ['hiv', 'HIV'],
-      ['aids', 'HIV/AIDS'],
-      ['tuberculosis', 'Tuberculosis'],
-      ['tb', 'Tuberculosis'],
-      ['covid', 'COVID-19'],
-      ['diabetes', 'Diabetes'],
-      ['hypertension', 'Hypertension'],
-      ['cancer', 'Cancer'],
-      ['oncology', 'Cancer'],
-      ['breast', 'Breast cancer'],
-      ['lung', 'Lung disease'],
-      ['asthma', 'Asthma'],
-      ['stroke', 'Stroke'],
-      ['pneumonia', 'Pneumonia'],
-      ['sepsis', 'Sepsis'],
-      ['anemia', 'Anemia'],
-      ['pregnancy', 'Maternal health'],
-      ['maternal', 'Maternal health'],
-      ['hepatitis', 'Hepatitis'],
-      ['lymphoma', 'Lymphoma'],
-      ['nash', 'NASH'],
-      ['alzheimer', 'Alzheimer\'s'],
-      ['parkinson', 'Parkinson\'s'],
-      ['infectious', 'Infectious disease'],
-      ['immunotherapy', 'Immunotherapy'],
-      ['cardio', 'Cardiovascular disease'],
-      ['arthritis', 'Arthritis'],
-      ['sickle', 'Sickle cell disease']
-    ];
-
-    for (const [keyword, label] of rules) {
-      if (haystack.includes(keyword)) return label;
+  const groupName = meta => {
+    switch (groupFilter.value) {
+      case 'disease': return meta.condition;
+      case 'status': return meta.status;
+      case 'type': return meta.studyType;
+      default: return meta.country || 'Location not listed';
     }
-
-    return 'General research';
   };
 
-  const parseCardMeta = card => {
-    const title = card.querySelector('h3')?.textContent.trim() || 'Untitled study';
-    const metaItems = [...card.querySelectorAll('.meta > span')].map(el => normalize(el.textContent));
-    const studyType = metaItems[0]?.replace(/^◈\s*/, '') || 'Clinical study';
-    const location = metaItems[1]?.replace(/^⌖\s*/, '') || 'Location not specified';
-    const country = location.includes(',') ? location.split(',').map(part => part.trim()).filter(Boolean).at(-1) : location.trim();
-    const status = card.querySelector('.status')?.textContent.trim() || 'Unknown';
-    const nct = card.querySelector('.nct')?.textContent.trim() || 'NCT unknown';
-    const disease = inferDisease(title);
-
-    return { title, studyType, location, country, status, disease, nct };
-  };
-
-  const getGroupValue = (meta, groupBy) => {
-    if (groupBy === 'country') return meta.country || 'Unspecified';
-    if (groupBy === 'disease') return meta.disease || 'General research';
-    if (groupBy === 'status') return meta.status || 'Unknown';
-    if (groupBy === 'type') return meta.studyType || 'Clinical study';
-    return 'All';
-  };
-
-  const applyLocalFilters = () => {
-    const searchTerm = normalize(searchInput.value).toLowerCase();
-    const statusTerm = statusFilter.value;
-
-    [...results.querySelectorAll('.trial-card')].forEach(card => {
-      const meta = parseCardMeta(card);
-      const matchesSearch = !searchTerm || `${meta.title} ${meta.location} ${meta.nct}`.toLowerCase().includes(searchTerm);
-      const matchesStatus = statusTerm === 'all' || (statusTerm === 'recruiting' && /recruit/i.test(meta.status)) || (statusTerm === 'active' && !/completed|withdrawn|terminated|suspended|unknown/i.test(meta.status));
-      card.style.display = matchesSearch && matchesStatus ? '' : 'none';
-    });
-  };
-
-  const renderGroups = () => {
-    const cards = [...results.querySelectorAll('.trial-card')].filter(card => card.style.display !== 'none');
+  function refresh() {
+    scheduledFrame = false;
+    const cards = [...results.querySelectorAll('.trial-card')];
+    const query = normalize(searchInput.value).toLocaleLowerCase();
     const groups = new Map();
+    let shown = 0;
+    let recruiting = 0;
+    const countries = new Set();
+    const topics = new Map();
 
     cards.forEach(card => {
-      const meta = parseCardMeta(card);
-      const key = getGroupValue(meta, groupFilter.value);
+      const meta = getMeta(card);
+      const text = `${meta.title} ${meta.location} ${meta.studyId} ${meta.condition}`.toLocaleLowerCase();
+      const matchesQuery = !query || text.includes(query);
+      const isRecruiting = /recruit/i.test(meta.status);
+      const matchesStatus = statusFilter.value !== 'recruiting' || isRecruiting;
+      card.hidden = !(matchesQuery && matchesStatus);
+      if (card.hidden) return;
+
+      shown++;
+      if (isRecruiting) recruiting++;
+      if (meta.country && meta.country !== 'Location not listed') countries.add(meta.country);
+      topics.set(meta.condition, (topics.get(meta.condition) || 0) + 1);
+      const key = groupName(meta);
       if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(card);
+      groups.get(key).push({ card, meta });
     });
 
-    const orderedKeys = [...groups.keys()].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    metric('total').textContent = String(shown);
+    metric('countries').textContent = String(countries.size);
+    metric('recruiting').textContent = String(recruiting);
+    const mostCommonTopic = [...topics.entries()].sort((a, b) => b[1] - a[1])[0];
+    metric('focus').textContent = mostCommonTopic && mostCommonTopic[0] !== 'Health topic not specified' ? mostCommonTopic[0] : '—';
 
-    const groupedOrder = [];
-    orderedKeys.forEach(key => {
-      const groupCards = [...groups.get(key)].sort((a, b) => {
-        const titleA = parseCardMeta(a).title.toLowerCase();
-        const titleB = parseCardMeta(b).title.toLowerCase();
-        return titleA.localeCompare(titleB);
-      });
-      groupedOrder.push(...groupCards);
-    });
+    const fragment = document.createDocumentFragment();
+    const groupKeys = [...groups.keys()].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    groupKeys.forEach(key => {
+      const studies = groups.get(key);
+      const group = document.createElement('div');
+      group.className = 'trial-organizer-group';
+      const heading = document.createElement('div');
+      heading.className = 'trial-organizer-group-header';
+      const name = document.createElement('span');
+      name.textContent = key;
+      const count = document.createElement('span');
+      count.textContent = `${studies.length} ${studies.length === 1 ? 'study' : 'studies'}`;
+      heading.append(name, count);
+      group.appendChild(heading);
 
-    groupedOrder.forEach(card => results.appendChild(card));
-
-    const summary = {
-      total: cards.length,
-      countries: new Set(cards.map(card => parseCardMeta(card).country).filter(Boolean)).size,
-      recruiting: cards.filter(card => /recruit/i.test(parseCardMeta(card).status)).length,
-      focus: cards.length ? inferDisease(cards[0].querySelector('h3')?.textContent || '') : '—'
-    };
-
-    metricEls.total.textContent = summary.total;
-    metricEls.countries.textContent = summary.countries;
-    metricEls.recruiting.textContent = summary.recruiting;
-
-    const topFocus = cards.reduce((acc, card) => {
-      const disease = parseCardMeta(card).disease;
-      acc[disease] = (acc[disease] || 0) + 1;
-      return acc;
-    }, {});
-
-    const focusLabel = Object.entries(topFocus).sort((a, b) => b[1] - a[1])[0];
-    metricEls.focus.textContent = focusLabel ? focusLabel[0] : '—';
-
-    groupsContainer.innerHTML = '';
-    orderedKeys.forEach(key => {
-      const bucket = groups.get(key);
-      const header = document.createElement('div');
-      header.className = 'trial-organizer-group';
-      const label = document.createElement('div');
-      label.className = 'trial-organizer-group-header';
-      label.innerHTML = `<span>${key}</span><span>${bucket.length}</span>`;
-      header.appendChild(label);
-      bucket.forEach(card => {
-        const chip = document.createElement('button');
-        chip.type = 'button';
-        chip.textContent = parseCardMeta(card).title;
-        chip.addEventListener('click', () => {
+      // Keep the overview compact; users can use the main results cards for the full list.
+      studies.slice(0, 3).forEach(({ card, meta }) => {
+        const jump = document.createElement('button');
+        jump.type = 'button';
+        jump.textContent = meta.title;
+        jump.addEventListener('click', () => {
           card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          card.classList.add('is-highlighted');
-          setTimeout(() => card.classList.remove('is-highlighted'), 1800);
-        });
-        header.appendChild(chip);
+          card.classList.add('organizer-highlight');
+          window.setTimeout(() => card.classList.remove('organizer-highlight'), 1400);
+        }, { once: true });
+        group.appendChild(jump);
       });
-      groupsContainer.appendChild(header);
+
+      if (studies.length > 3) {
+        const more = document.createElement('p');
+        more.className = 'trial-organizer-more';
+        more.textContent = `And ${studies.length - 3} more in the results below`;
+        group.appendChild(more);
+      }
+      fragment.appendChild(group);
     });
-  };
 
-  const refresh = () => {
-    applyLocalFilters();
-    renderGroups();
-  };
+    if (!shown) {
+      const empty = document.createElement('p');
+      empty.className = 'trial-organizer-empty';
+      empty.textContent = cards.length ? 'No loaded studies match those filters. Try changing your search.' : 'Studies will appear here after results load.';
+      fragment.appendChild(empty);
+    }
+    groupsContainer.replaceChildren(fragment);
+  }
 
-  searchInput.addEventListener('input', refresh);
-  statusFilter.addEventListener('change', refresh);
-  groupFilter.addEventListener('change', refresh);
+  function scheduleRefresh() {
+    window.clearTimeout(refreshTimer);
+    refreshTimer = window.setTimeout(() => {
+      if (scheduledFrame) return;
+      scheduledFrame = true;
+      window.requestAnimationFrame(refresh);
+    }, 100);
+  }
 
-  const observer = new MutationObserver(() => refresh());
-  observer.observe(results, { childList: true, subtree: true });
+  searchInput.addEventListener('input', scheduleRefresh);
+  statusFilter.addEventListener('change', scheduleRefresh);
+  groupFilter.addEventListener('change', scheduleRefresh);
 
+  // Watch only direct result-list changes. Do not observe subtree or move cards here:
+  // that previously caused observer callbacks to retrigger themselves and freeze the page.
+  const observer = new MutationObserver(records => {
+    if (records.some(record => record.addedNodes.length || record.removedNodes.length)) scheduleRefresh();
+  });
+  observer.observe(results, { childList: true });
   refresh();
 })();
