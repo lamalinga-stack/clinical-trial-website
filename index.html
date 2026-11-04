@@ -28,14 +28,14 @@
       <section class="hero">
         <div class="hero-copy">
           <p class="eyebrow" data-i18n="clinicalResearch">Clinical research across Africa</p>
-          <h1><span data-i18n="findHealthTrials">Find health trials in your country.</span></h1>
-          <p class="hero-text" data-i18n="heroText">Discover registered clinical studies conducted across African nations. Search by condition, select your country, and explore ongoing research.</p>
+          <h1><span data-i18n="findHealthTrials">Find treatment options and clinical studies near you.</span></h1>
+          <p class="hero-text" data-i18n="heroText">Search by health condition, country, and treatment. Explore studies that may be recruiting in your area and learn which options are available.</p>
         </div>
         <form id="search-form" class="search-panel">
           <label for="search-input" data-i18n="searchByCondition">Search by condition or treatment</label>
           <div class="search-row">
-            <input id="search-input" type="search" data-i18n-placeholder="searchPlaceholder" autocomplete="off" />
-            <button type="submit"><span data-i18n="searchButton">Search trials</span><span aria-hidden="true">→</span></button>
+            <input id="search-input" type="search" data-i18n-placeholder="searchPlaceholder" autocomplete="off" placeholder="Try: malaria, diabetes, HIV" />
+            <button type="submit"><span data-i18n="searchButton">Search</span><span aria-hidden="true">→</span></button>
           </div>
           <div class="filter-row">
             <label for="country-select" data-i18n="filterByCountry">Filter by African country</label>
@@ -77,6 +77,24 @@
             <button type="button" data-query="diabetes" data-i18n="diabetes">Diabetes</button>
           </div>
         </form>
+      </section>
+
+      <section class="patient-guide" aria-label="How patients can use this site">
+        <div class="patient-guide-card">
+          <span class="step-number">1</span>
+          <h3>Search</h3>
+          <p>Type your condition, treatment, or symptom to see what studies are available.</p>
+        </div>
+        <div class="patient-guide-card">
+          <span class="step-number">2</span>
+          <h3>Filter</h3>
+          <p>Choose your country and region to focus on studies near you.</p>
+        </div>
+        <div class="patient-guide-card">
+          <span class="step-number">3</span>
+          <h3>Review</h3>
+          <p>Check the study status and open the official trial page for details.</p>
+        </div>
       </section>
 
       <section class="coverage-strip" aria-label="Trial coverage overview">
