@@ -7,7 +7,7 @@
     <title>AfricaTrialUs | Clinical trials in Africa</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -103,33 +103,14 @@
           <p class="eyebrow" data-i18n="participantContacts">Participant contacts</p>
           <h2 data-i18n="registerClinic">Register your clinic or study contact details</h2>
         </div>
-
         <form id="participant-form" class="participant-form">
           <div class="form-grid">
-            <label>
-              <span data-i18n="country">Country</span>
-              <input type="text" name="country" data-i18n-placeholder="countryPlaceholder" />
-            </label>
-            <label>
-              <span data-i18n="diseaseArea">Disease area</span>
-              <input type="text" name="diseaseArea" data-i18n-placeholder="diseaseAreaPlaceholder" />
-            </label>
-            <label>
-              <span data-i18n="email">Email</span>
-              <input type="email" name="email" data-i18n-placeholder="emailPlaceholder" />
-            </label>
-            <label>
-              <span data-i18n="address">Address</span>
-              <input type="text" name="address" data-i18n-placeholder="addressPlaceholder" />
-            </label>
-            <label>
-              <span data-i18n="code">Code</span>
-              <input type="text" name="code" data-i18n-placeholder="codePlaceholder" />
-            </label>
-            <label>
-              <span data-i18n="telephone">Telephone number</span>
-              <input type="tel" name="telephone" data-i18n-placeholder="telephonePlaceholder" />
-            </label>
+            <label><span data-i18n="country">Country</span><input type="text" name="country" data-i18n-placeholder="countryPlaceholder" /></label>
+            <label><span data-i18n="diseaseArea">Disease area</span><input type="text" name="diseaseArea" data-i18n-placeholder="diseaseAreaPlaceholder" /></label>
+            <label><span data-i18n="email">Email</span><input type="email" name="email" data-i18n-placeholder="emailPlaceholder" /></label>
+            <label><span data-i18n="address">Address</span><input type="text" name="address" data-i18n-placeholder="addressPlaceholder" /></label>
+            <label><span data-i18n="code">Code</span><input type="text" name="code" data-i18n-placeholder="codePlaceholder" /></label>
+            <label><span data-i18n="telephone">Telephone number</span><input type="tel" name="telephone" data-i18n-placeholder="telephonePlaceholder" /></label>
           </div>
           <button type="submit" class="submit-button" data-i18n="submitContact">Submit contact</button>
         </form>
@@ -141,36 +122,20 @@
           <h2 data-i18n="africaTrialsNews">Africa clinical trials news</h2>
           <p class="section-copy" data-i18n="newsDescription">Follow the latest announcements and updates about clinical research across Africa.</p>
         </div>
-
         <div class="social-feeds">
           <div class="social-feed">
-            <div class="feed-header">
-              <span class="feed-icon">f</span>
-              <span class="feed-label" data-i18n="facebook">Facebook</span>
-            </div>
+            <div class="feed-header"><span class="feed-icon">f</span><span class="feed-label" data-i18n="facebook">Facebook</span></div>
             <div class="feed-content">
               <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FAfricaTrialUs&tabs=timeline&width=100%25&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId" width="100%" height="500" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
             </div>
           </div>
-
           <div class="social-feed">
-            <div class="feed-header">
-              <span class="feed-icon">𝕏</span>
-              <span class="feed-label" data-i18n="xTwitter">X (Twitter)</span>
-            </div>
-            <div class="feed-content">
-              <a class="twitter-timeline" href="https://twitter.com/AfricaTrialUs?ref_src=twsrc%5Etfw" data-height="500">Tweets by AfricaTrialUs</a>
-            </div>
+            <div class="feed-header"><span class="feed-icon">𝕏</span><span class="feed-label" data-i18n="xTwitter">X (Twitter)</span></div>
+            <div class="feed-content"><a class="twitter-timeline" href="https://twitter.com/AfricaTrialUs?ref_src=twsrc%5Etfw" data-height="500">Tweets by AfricaTrialUs</a></div>
           </div>
-
           <div class="social-feed">
-            <div class="feed-header">
-              <span class="feed-icon">📷</span>
-              <span class="feed-label" data-i18n="instagram">Instagram</span>
-            </div>
-            <div class="feed-content">
-              <iframe src="https://www.instagram.com/africatrialus/embed" width="100%" height="500" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
-            </div>
+            <div class="feed-header"><span class="feed-icon">📷</span><span class="feed-label" data-i18n="instagram">Instagram</span></div>
+            <div class="feed-content"><iframe src="https://www.instagram.com/africatrialus/embed" width="100%" height="500" frameborder="0" scrolling="no" allowtransparency="true"></iframe></div>
           </div>
         </div>
       </section>
@@ -186,11 +151,12 @@
       </section>
     </main>
 
-    <footer><span>AfricaTrialUs</span><span><span data-i18n="dataSourced">Data sourced from</span> <a href="https://clinicaltrials.gov/" target="_blank" rel="noreferrer">ClinicalTrials.gov</a> <span>&</span> <a href="https://pactr.samrc.ac.za/GIS_Viewer.aspx" target="_blank" rel="noreferrer">PACTR</a></span></footer>
+    <footer><span>AfricaTrialUs</span><span><span data-i18n="dataSourced">Data sourced from</span> <a href="https://clinicaltrials.gov/" target="_blank" rel="noreferrer">ClinicalTrials.gov</a> &amp; <a href="https://pactr.samrc.ac.za/GIS_Viewer.aspx" target="_blank" rel="noreferrer">PACTR</a></span></footer>
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <script src="vulavula.js" defer></script>
     <script src="i18n.js" defer></script>
     <script src="firebase-config.js" defer></script>
+    <script src="trial-organizer.js" defer></script>
     <script src="app.js" defer></script>
   </body>
 </html>
