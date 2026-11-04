@@ -64,7 +64,7 @@ let requestController = null;
 let searchSequence = 0;
 
 const excludedStudyStatuses = new Set(['COMPLETED', 'SUSPENDED']);
-const escapeHTML = (value = '') => String(value).replace(/[&<>\'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
+const escapeHTML = (value = '') => String(value).replace(/[&<>\'\"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
 const formatStatus = status => (status || 'Unknown').toLowerCase().replaceAll('_', ' ');
 const normalizeCountry = value => (value || '').trim().replace(/\s+/g, ' ').toLowerCase();
 const normalizeLocationValue = value => (value || '').trim().replace(/\s+/g, ' ').toLowerCase();
@@ -90,6 +90,12 @@ const isVisibleStudy = study => {
   const status = (study?.protocolSection?.statusModule?.overallStatus || '').toUpperCase();
   return !excludedStudyStatuses.has(status) && status === 'RECRUITING' && isAfricanStudy(study);
 };
+
+const africanLocationsOnly = (locations = []) =>
+  locations.filter(location => {
+    const countryName = location?.country || '';
+    return AFRICAN_COUNTRIES.some(africanCountry => normalizeCountry(africanCountry) === normalizeCountry(countryName));
+  });
 
 function showLoading(append = false) {
   if (!append) results.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
@@ -153,18 +159,20 @@ function trialCard(study) {
   const status = p.statusModule || {};
   const design = p.designModule || {};
   const contacts = p.contactsLocationsModule || {};
-  const locations = contacts.locations || [];
-  const conditionModule = p.conditionsModule || {};
+  const rawLocations = contacts.locations || [];
+  const locations = africanLocationsOnly(rawLocations);
   const studyType = design.studyType ? `${design.studyType.charAt(0)}${design.studyType.slice(1).toLowerCase()} study` : 'Study type not listed';
   const title = id.briefTitle || 'Study title not listed';
   const statusText = formatStatus(status.overallStatus);
   const statusClass = statusText.includes('recruit') ? ' recruiting' : '';
   const studyId = id.nctId || '';
+  const conditionModule = p.conditionsModule || {};
   const condition = (conditionModule.conditions || []).join(', ') || 'Health condition not listed';
+
   const locationMarkup = locations.length
     ? locations.map(location => {
         const parts = [location.facility, location.city, location.state || location.province, location.country].filter(Boolean);
-        const address = parts.length ? parts.join(', ') : 'Study location not listed';
+        const address = parts.length ? parts.join(', ') : 'African site not listed';
         const siteContact = location?.contacts?.[0] || {};
         const siteName = siteContact.name || '';
         const sitePhone = siteContact.phone || '';
@@ -176,14 +184,14 @@ function trialCard(study) {
         ].filter(Boolean).join(' · ');
         return `<li><span class="site-location">${escapeHTML(address)}</span>${contactMarkup ? `<span class="site-contact">${contactMarkup}</span>` : '<span class="site-contact">Contact details not provided in the registry</span>'}</li>`;
       }).join('')
-    : '<li><span class="site-location">Study locations are not listed in the registry.</span><span class="site-contact">Open the official record to check for updates.</span></li>';
+    : '<li><span class="site-location">African study sites are not listed in the registry.</span><span class="site-contact">Open the official trial record for the latest site updates.</span></li>';
 
   return `<article class="trial-card" data-original-title="${escapeHTML(title)}" data-condition="${escapeHTML(condition)}">
     <div class="card-top"><span class="status${statusClass}">${escapeHTML(statusText)}</span><span class="nct">${escapeHTML(studyId)}</span></div>
     <h3>${escapeHTML(title)}</h3>
     <p class="trial-condition"><strong>About this study:</strong> ${escapeHTML(condition)}</p>
     <div class="meta"><span><span class="meta-icon">◈</span>${escapeHTML(studyType)}</span></div>
-    <details class="trial-sites"><summary>Study locations and contact details (${locations.length || 'not listed'})</summary><ul>${locationMarkup}</ul></details>
+    <details class="trial-sites"><summary>African site details (${locations.length || 0})</summary><ul>${locationMarkup}</ul></details>
     <a class="trial-link" data-original-text="View study details" href="https://clinicaltrials.gov/study/${encodeURIComponent(studyId)}" target="_blank" rel="noopener noreferrer">View official study details →</a>
   </article>`;
 }
