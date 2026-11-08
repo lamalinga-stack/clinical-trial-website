@@ -108,8 +108,9 @@ main { overflow: hidden; }
   position: absolute;
   inset: 12px 28px 0;
   background:
-    radial-gradient(ellipse at 92% 10%, rgba(245, 181, 68, .68), transparent 28%),
-    radial-gradient(ellipse at 9% 92%, rgba(0, 107, 85, .24), transparent 32%),
+    radial-gradient(circle at 18% 18%, rgba(255,255,255,.4) 0 12%, transparent 12.5%),
+    radial-gradient(circle at 80% 22%, rgba(255,255,255,.25) 0 11%, transparent 11.5%),
+    radial-gradient(circle at 50% 60%, rgba(255,255,255,.18) 0 30%, transparent 30.5%),
     linear-gradient(118deg, #f8d76c 0%, #efac55 46%, #de7046 100%);
   border-radius: 34px;
   z-index: -2;
@@ -119,10 +120,13 @@ main { overflow: hidden; }
   position: absolute;
   inset: 12px 28px 0;
   border-radius: 34px;
-  opacity: .14;
+  opacity: .22;
   z-index: -1;
-  background-image: repeating-linear-gradient(45deg, transparent 0 22px, #73351d 23px 25px, transparent 26px 48px);
-  mask-image: linear-gradient(110deg, transparent 5%, black 70%);
+  background:
+    radial-gradient(circle at 26% 34%, transparent 0 18%, rgba(189, 74, 42, .7) 18.3%, transparent 18.8%, transparent 100%),
+    radial-gradient(circle at 42% 52%, transparent 0 24%, rgba(255,255,255,.55) 24.3%, transparent 24.8%, transparent 100%),
+    radial-gradient(circle at 66% 46%, transparent 0 20%, rgba(8, 97, 77, .75) 20.2%, transparent 20.7%, transparent 100%),
+    radial-gradient(circle at 70% 70%, transparent 0 15%, rgba(255,255,255,.45) 15.2%, transparent 15.7%, transparent 100%);
   pointer-events: none;
 }
 .hero-copy { grid-column: 1; grid-row: 1; align-self: end; }
@@ -163,6 +167,18 @@ main { overflow: hidden; }
   display: flex;
   align-items: center;
   gap: 14px;
+}
+.hero-visual::before {
+  content: "";
+  position: absolute;
+  left: -20px;
+  right: 22%;
+  top: 50%;
+  height: 120px;
+  transform: translateY(-50%);
+  background: radial-gradient(circle, rgba(255,255,255,.35) 0 35%, transparent 35.5%, transparent 100%);
+  filter: blur(2px);
+  opacity: .85;
 }
 .visual-card {
   position: relative;
