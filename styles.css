@@ -107,12 +107,12 @@ main { overflow: hidden; }
   content: "";
   position: absolute;
   inset: 12px 28px 0;
-  background:
-    radial-gradient(circle at 18% 18%, rgba(255,255,255,.4) 0 12%, transparent 12.5%),
-    radial-gradient(circle at 80% 22%, rgba(255,255,255,.25) 0 11%, transparent 11.5%),
-    radial-gradient(circle at 50% 60%, rgba(255,255,255,.18) 0 30%, transparent 30.5%),
-    linear-gradient(118deg, #f8d76c 0%, #efac55 46%, #de7046 100%);
   border-radius: 34px;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255,255,255,.42) 0 12%, transparent 12.5%),
+    radial-gradient(circle at 80% 24%, rgba(255,255,255,.32) 0 10%, transparent 10.5%),
+    radial-gradient(circle at 50% 64%, rgba(255,255,255,.15) 0 28%, transparent 28.5%),
+    linear-gradient(118deg, #f8d76c 0%, #efac55 46%, #de7046 100%);
   z-index: -2;
 }
 .hero::after {
@@ -123,10 +123,11 @@ main { overflow: hidden; }
   opacity: .22;
   z-index: -1;
   background:
-    radial-gradient(circle at 26% 34%, transparent 0 18%, rgba(189, 74, 42, .7) 18.3%, transparent 18.8%, transparent 100%),
-    radial-gradient(circle at 42% 52%, transparent 0 24%, rgba(255,255,255,.55) 24.3%, transparent 24.8%, transparent 100%),
-    radial-gradient(circle at 66% 46%, transparent 0 20%, rgba(8, 97, 77, .75) 20.2%, transparent 20.7%, transparent 100%),
-    radial-gradient(circle at 70% 70%, transparent 0 15%, rgba(255,255,255,.45) 15.2%, transparent 15.7%, transparent 100%);
+    radial-gradient(circle at 20% 36%, transparent 0 15%, rgba(199, 103, 72, .88) 15.3%, transparent 15.7%, transparent 100%),
+    radial-gradient(circle at 38% 51%, transparent 0 22%, rgba(255,255,255,.66) 22.2%, transparent 22.8%, transparent 100%),
+    radial-gradient(circle at 66% 42%, transparent 0 18%, rgba(16, 100, 76, .82) 18.3%, transparent 18.9%, transparent 100%),
+    radial-gradient(circle at 70% 75%, transparent 0 13%, rgba(255,255,255,.48) 13.2%, transparent 13.7%, transparent 100%),
+    radial-gradient(circle at 45% 18%, transparent 0 12%, rgba(255,255,255,.48) 12.2%, transparent 12.7%, transparent 100%);
   pointer-events: none;
 }
 .hero-copy { grid-column: 1; grid-row: 1; align-self: end; }
@@ -171,14 +172,26 @@ main { overflow: hidden; }
 .hero-visual::before {
   content: "";
   position: absolute;
-  left: -20px;
-  right: 22%;
+  left: -25px;
+  right: 14%;
   top: 50%;
-  height: 120px;
+  height: 130px;
   transform: translateY(-50%);
-  background: radial-gradient(circle, rgba(255,255,255,.35) 0 35%, transparent 35.5%, transparent 100%);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(255,255,255,.52) 0 40%, transparent 40.5%, transparent 100%),
+    radial-gradient(circle at 48% 70%, rgba(255,255,255,.38) 0 25%, transparent 25.5%, transparent 100%);
   filter: blur(2px);
-  opacity: .85;
+  opacity: .9;
+}
+.hero-visual::after {
+  content: "";
+  position: absolute;
+  inset: -8px 18% -8px -18px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.45);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.3), 0 0 0 12px rgba(255,255,255,.06);
+  opacity: .8;
 }
 .visual-card {
   position: relative;
