@@ -30,7 +30,29 @@
           <p class="eyebrow" data-i18n="clinicalResearch">Clinical research across Africa</p>
           <h1><span data-i18n="findHealthTrials">Find treatment options and clinical studies near you.</span></h1>
           <p class="hero-text" data-i18n="heroText">Search by health condition, country, and treatment. Explore studies that may be recruiting in your area and learn which options are available.</p>
+          <div class="hero-highlights" aria-label="Highlights">
+            <span class="pill pill-gold">20+ countries</span>
+            <span class="pill pill-moss">Recruiting now</span>
+          </div>
         </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <div class="visual-card card-primary">
+            <span class="mini-label">Africa Pulse</span>
+            <strong>12,480+</strong>
+            <span>research opportunities</span>
+          </div>
+          <div class="visual-card card-secondary">
+            <span class="dot"></span>
+            <span>Kenya • Ghana • Nigeria</span>
+          </div>
+          <div class="map-orbit">
+            <span>Malaria</span>
+            <span>HIV</span>
+            <span>Diabetes</span>
+          </div>
+        </div>
+
         <form id="search-form" class="search-panel">
           <label for="search-input" data-i18n="searchByCondition">Search by condition or treatment</label>
           <div class="search-row">
@@ -161,7 +183,7 @@
       <section class="results-section" aria-live="polite">
         <div class="results-toolbar">
           <div><p class="eyebrow" data-i18n="clinicalTrials">Clinical Trials</p><h2 id="results-title" data-i18n="featuredAfricanTrials">Featured African trials</h2><p id="result-count" class="muted">Loading trials…</p></div>
-          <label class="sort-control"><span data-i18n="sortBy">Sort by</span> <select id="sort-select"><option value="LastUpdatePostDate" data-i18n="recentlyUpdated">Recently updated</option><option value="FirstPostDate" data-i18n="newlyAdded">Newly added</option></select></label>
+          <label class="sort-control"><span data-i18n="sortBy">Sort by</span> <select id="sort-select"><option value="LastUpdatePostDate" data-i18n="recentlyUpdated">Recently updated</option><option value="FirstPostDate" data-i18n="recentlyPosted">Recently posted</option><option value="OverallStatus" data-i18n="studyStatus">Study status</option></select></label>
         </div>
         <div id="status-message" class="status-message" hidden></div>
         <div id="results" class="results-grid"></div>
