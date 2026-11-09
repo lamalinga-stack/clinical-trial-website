@@ -1,0 +1,15 @@
+.dashboard-section { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 18px 30px; }
+.dashboard-heading { max-width: 700px; }
+.dashboard-heading h2 { color: #fff; }
+.dashboard-heading .registry-copy { max-width: 680px; margin-top: 12px; }
+.dashboard-section .registry-actions { justify-self: end; }
+.dashboard-frame-wrap { grid-column: 1 / -1; width: 100%; overflow: hidden; border: 1px solid rgba(255,255,255,.35); border-radius: 18px; background: #fff; box-shadow: 0 16px 36px rgba(0,0,0,.2); }
+.powerbi-dashboard { display: block; width: 100%; height: clamp(460px, 68vw, 760px); border: 0; background: #fff; }
+.social-feed .feed-content { display: grid; place-items: center; min-height: 150px; padding: 24px; color: #075b46; font-weight: 700; }
+.social-feed .feed-content a { color: inherit; text-decoration: none; }
+.social-feed .feed-content a:hover { text-decoration: underline; }
+@media (max-width: 760px) {
+  .dashboard-section { grid-template-columns: 1fr; }
+  .dashboard-section .registry-actions { justify-self: start; }
+  .powerbi-dashboard { height: 620px; }
+}
