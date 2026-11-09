@@ -1,12 +1,14 @@
-// The existing app keeps the legacy button hook for compatibility. Capture its
-// click before the app handler so it opens the replacement Power BI dashboard.
-const AFRICA_DASHBOARD_URL = 'https://app.powerbi.com/view?r=eyJrIjoiMTQ0MGYxNTktOTQ4Zi00NzBmLWFhYzEtY2QzM2FkNGFlIiwidCI6ImYxOTMwYmZmLTliNTEtNGQwYy1iMmJkLWMyNmE5ZTBmNDYwMCIsImMiOjh9';
+// Correct public Power BI report URL supplied for the Africa research dashboard.
+const AFRICA_DASHBOARD_URL = 'https://app.powerbi.com/view?r=eyJrIjoiMTQ0MGYxNTktOTQ4Zi00NzBmLWFhYzEtY2QzM2FkYTZmNGFlIiwidCI6ImYxOTMwYmZmLTliNTEtNGQwYy1iMmJkLWMyNmE5ZTBmNDYwMCIsImMiOjh9';
 
-document.addEventListener('click', event => {
-  const legacyMapButton = event.target.closest('#pactr-focus');
-  if (!legacyMapButton) return;
+// Keep the report embedded on the site and make all dashboard links use the
+// exact same URL. The report's map scope is configured in Power BI itself.
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('iframe.powerbi-dashboard').forEach(frame => {
+    frame.src = AFRICA_DASHBOARD_URL;
+  });
 
-  event.preventDefault();
-  event.stopImmediatePropagation();
-  window.open(AFRICA_DASHBOARD_URL, '_blank', 'noopener,noreferrer');
-}, true);
+  document.querySelectorAll('a[href*="app.powerbi.com/view"]').forEach(link => {
+    link.href = AFRICA_DASHBOARD_URL;
+  });
+});
