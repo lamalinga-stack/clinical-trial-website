@@ -1,0 +1,13 @@
+.dashboard-section { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 18px 30px; }
+.dashboard-heading { max-width: 700px; }
+.dashboard-heading h2 { color: #fff; }
+.dashboard-heading .registry-copy { max-width: 680px; margin-top: 12px; }
+.dashboard-frame-wrap { grid-column: 1 / -1; width: 100%; overflow: hidden; border: 1px solid rgba(255,255,255,.35); border-radius: 18px; background: #fff; box-shadow: 0 16px 36px rgba(0,0,0,.2); }
+.powerbi-dashboard { display: block; width: 100%; height: clamp(460px, 68vw, 760px); border: 0; background: #fff; }
+.dashboard-compat-button { display: none; }
+.social-feed .feed-content { min-height: 500px; }
+.social-feed .feed-content iframe, .social-feed .feed-content .twitter-timeline { display: block; width: 100%; min-height: 500px; }
+@media (max-width: 760px) {
+  .dashboard-section { grid-template-columns: 1fr; }
+  .powerbi-dashboard { height: 620px; }
+}
