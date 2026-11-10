@@ -66,6 +66,13 @@
         <div><strong>Dashboard</strong><span>Power BI • Africa research data</span></div>
       </section>
 
+      <section class="results-section" aria-live="polite">
+        <div class="results-toolbar"><div><p class="eyebrow" data-i18n="clinicalTrials">Clinical Trials</p><h2 id="results-title" data-i18n="featuredAfricanTrials">Featured African trials</h2><p id="result-count" class="muted">Loading trials…</p></div>
+          <label class="sort-control"><span data-i18n="sortBy">Sort by</span><select id="sort-select"><option value="LastUpdatePostDate" data-i18n="recentlyUpdated">Recently updated</option><option value="FirstPostDate" data-i18n="recentlyPosted">Recently posted</option><option value="OverallStatus" data-i18n="studyStatus">Study status</option></select></label>
+        </div>
+        <div id="status-message" class="status-message" hidden></div><div id="results" class="results-grid"></div><button id="load-more" class="load-more" type="button" hidden><span data-i18n="loadMoreStudies">Load more studies</span><span>↓</span></button>
+      </section>
+
       <section class="registry-highlight dashboard-section" aria-label="Africa research dashboard">
         <div class="dashboard-heading">
           <p class="eyebrow">A shared view of research across the continent</p>
@@ -75,34 +82,6 @@
         <div class="dashboard-frame-wrap">
           <iframe class="powerbi-dashboard" title="Africa clinical trials dashboard" src="https://app.powerbi.com/view?r=eyJrIjoiMTQ0MGYxNTktOTQ4Zi00NzBmLWFhYzEtY2QzM2FkNGFlIiwidCI6ImYxOTMwYmZmLTliNTEtNGQwYy1iMmJkLWMyNmE5ZTBmNDYwMCIsImMiOjh9" allowfullscreen="true" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
         </div>
-      </section>
-
-      <section class="participant-section">
-        <div class="section-heading"><p class="eyebrow" data-i18n="participantContacts">Participant contacts</p><h2 data-i18n="registerClinic">Register your clinic or study contact details</h2></div>
-        <form id="participant-form" class="participant-form"><div class="form-grid">
-          <label><span data-i18n="country">Country</span><input type="text" name="country" data-i18n-placeholder="countryPlaceholder" /></label>
-          <label><span data-i18n="diseaseArea">Disease area / Indication</span><input type="text" name="diseaseArea" data-i18n-placeholder="diseaseAreaPlaceholder" /></label>
-          <label><span data-i18n="email">Email</span><input type="email" name="email" data-i18n-placeholder="emailPlaceholder" /></label>
-          <label><span data-i18n="address">Address</span><input type="text" name="address" data-i18n-placeholder="addressPlaceholder" /></label>
-          <label><span data-i18n="code">Code</span><input type="text" name="code" data-i18n-placeholder="codePlaceholder" /></label>
-          <label><span data-i18n="telephone">Telephone number</span><input type="tel" name="telephone" data-i18n-placeholder="telephonePlaceholder" /></label>
-        </div><button type="submit" class="submit-button" data-i18n="submitContact">Submit contact</button></form>
-      </section>
-
-      <section class="newsfeed-section">
-        <div class="section-heading"><p class="eyebrow" data-i18n="latestUpdates">Latest updates</p><h2 data-i18n="africaTrialsNews">Africa clinical trials news</h2><p class="section-copy" data-i18n="newsDescription">Follow the latest announcements and updates about clinical research across Africa.</p></div>
-        <div class="social-feeds">
-          <div class="social-feed"><div class="feed-header"><span class="feed-icon">f</span><span class="feed-label" data-i18n="facebook">Facebook</span></div><div class="feed-content"><a href="https://www.facebook.com/AfricaTrialUs" target="_blank" rel="noopener noreferrer">Visit AfricaTrialUs on Facebook</a></div></div>
-          <div class="social-feed"><div class="feed-header"><span class="feed-icon">𝕏</span><span class="feed-label" data-i18n="xTwitter">X (Twitter)</span></div><div class="feed-content"><a href="https://twitter.com/AfricaTrialUs" target="_blank" rel="noopener noreferrer">Follow @AfricaTrialUs</a></div></div>
-          <div class="social-feed"><div class="feed-header"><span class="feed-icon">📷</span><span class="feed-label" data-i18n="instagram">Instagram</span></div><div class="feed-content"><a href="https://www.instagram.com/africatrialus/" target="_blank" rel="noopener noreferrer">Visit @africatrialus on Instagram</a></div></div>
-        </div>
-      </section>
-
-      <section class="results-section" aria-live="polite">
-        <div class="results-toolbar"><div><p class="eyebrow" data-i18n="clinicalTrials">Clinical Trials</p><h2 id="results-title" data-i18n="featuredAfricanTrials">Featured African trials</h2><p id="result-count" class="muted">Loading trials…</p></div>
-          <label class="sort-control"><span data-i18n="sortBy">Sort by</span><select id="sort-select"><option value="LastUpdatePostDate" data-i18n="recentlyUpdated">Recently updated</option><option value="FirstPostDate" data-i18n="recentlyPosted">Recently posted</option><option value="OverallStatus" data-i18n="studyStatus">Study status</option></select></label>
-        </div>
-        <div id="status-message" class="status-message" hidden></div><div id="results" class="results-grid"></div><button id="load-more" class="load-more" type="button" hidden><span data-i18n="loadMoreStudies">Load more studies</span><span>↓</span></button>
       </section>
     </main>
 
