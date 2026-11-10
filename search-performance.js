@@ -1,6 +1,5 @@
-// Speed up ClinicalTrials.gov queries by letting the API filter recruiting studies
-// and selected country before downloading study records. Cache identical queries
-// briefly to make repeat searches and returning to filters feel instant.
+// Keep the API request small, filter recruiting studies server-side, and cache
+// identical searches briefly so repeated queries return without another network wait.
 (() => {
   const API_HOST = 'clinicaltrials.gov';
   const CACHE_TTL_MS = 30_000;
@@ -17,7 +16,8 @@
     }
 
     const params = requestUrl.searchParams;
-    params.set('pageSize', '100');
+    // app.js requests 12 records; do not inflate this to 100, which made searches slower.
+    params.set('pageSize', '12');
     params.set('filter.overallStatus', 'RECRUITING');
 
     const country = document.querySelector('#country-select')?.value?.trim();
