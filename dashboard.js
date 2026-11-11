@@ -1,5 +1,5 @@
 // Correct public Power BI report URL supplied for the Africa research dashboard.
-const AFRICA_DASHBOARD_URL = 'https://app.powerbi.com/view?r=eyJrIjoiMTQ0MGYxNTktOTQ4Zi00NzBmLWFhYzEtY2QzM2FkYTZmNGFlIiwidCI6ImYxOTMwYmZmLTliNTEtNGQwYy1iMmJkLWMyNmE5ZTBmNDYwMCIsImMiOjh9';
+const AFRICA_DASHBOARD_URL = 'https://app.powerbi.com/view?r=eyJrIjoiMTQ0MGYxNTktOTQ4Zi00NzBmLWFhYzEtY2QzM2FkNGFlIiwidCI6ImYxOTMwYmZmLTliNTEtNGQwYy1iMmJkLWMyNmE5ZTBmNDYwMCIsImMiOjh9';
 
 // Prevent duplicate fetch patching when the helper is included more than once.
 if (!window.__africaTrialFetchOptimized) {
@@ -66,11 +66,47 @@ if (!window.__africaTrialFetchOptimized) {
   })();
 }
 
-// Keep the report embedded on the site and make all dashboard links use the
-// exact same URL. The report's map scope is configured in Power BI itself.
+// Collapse the heavy report on initial load. Visitors can expand it on demand or
+// open the same dashboard directly in Power BI.
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('iframe.powerbi-dashboard').forEach(frame => {
-    frame.src = AFRICA_DASHBOARD_URL;
+  document.querySelectorAll('.dashboard-section').forEach((section, index) => {
+    const frameWrap = section.querySelector('.dashboard-frame-wrap');
+    const frame = section.querySelector('iframe.powerbi-dashboard');
+    if (!frameWrap || !frame) return;
+
+    const dashboardUrl = frame.getAttribute('src') || AFRICA_DASHBOARD_URL;
+    frame.dataset.dashboardSrc = AFRICA_DASHBOARD_URL || dashboardUrl;
+    frame.removeAttribute('src');
+    frameWrap.hidden = true;
+
+    const controls = document.createElement('div');
+    controls.className = 'dashboard-controls';
+
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'dashboard-toggle';
+    toggle.textContent = 'Show dashboard';
+    toggle.setAttribute('aria-expanded', 'false');
+    const frameId = frame.id || `africa-dashboard-${index + 1}`;
+    frame.id = frameId;
+    toggle.setAttribute('aria-controls', frameId);
+    toggle.addEventListener('click', () => {
+      const show = toggle.getAttribute('aria-expanded') !== 'true';
+      toggle.setAttribute('aria-expanded', String(show));
+      toggle.textContent = show ? 'Hide dashboard' : 'Show dashboard';
+      frameWrap.hidden = !show;
+      if (show && !frame.src) frame.src = frame.dataset.dashboardSrc;
+    });
+
+    const link = document.createElement('a');
+    link.className = 'dashboard-open-link';
+    link.href = AFRICA_DASHBOARD_URL;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = 'Open dashboard in Power BI';
+
+    controls.append(toggle, link);
+    frameWrap.before(controls);
   });
 
   document.querySelectorAll('a[href*="app.powerbi.com/view"]').forEach(link => {
