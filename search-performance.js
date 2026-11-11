@@ -1,8 +1,20 @@
-// Keep the API request small, filter recruiting studies server-side, and cache
-// identical searches briefly so repeated queries return without another network wait.
+// Restrict ClinicalTrials.gov searches to African locations at the API, rather than
+// downloading unrelated recruiting studies and discarding them in the browser.
 (() => {
   const API_HOST = 'clinicaltrials.gov';
-  const CACHE_TTL_MS = 30_000;
+  const CACHE_TTL_MS = 120_000;
+  const AFRICAN_COUNTRIES = [
+    'South Africa', 'Nigeria', 'Kenya', 'Uganda', 'Ethiopia', 'Ghana', 'Tanzania',
+    'Cameroon', 'Senegal', 'Zambia', 'Zimbabwe', 'Mozambique', 'Rwanda', 'Malawi',
+    'Egypt', 'Tunisia', 'Morocco', 'Angola', 'Botswana', 'Namibia', 'Benin',
+    'Burundi', 'Cape Verde', 'Central African Republic', 'Chad', 'Comoros', 'Congo',
+    'Democratic Republic of Congo', "Cote d'Ivoire", 'Djibouti', 'Equatorial Guinea',
+    'Eritrea', 'Eswatini', 'Gabon', 'Gambia', 'Guinea', 'Guinea-Bissau', 'Lesotho',
+    'Liberia', 'Libya', 'Madagascar', 'Mali', 'Mauritania', 'Mauritius', 'Niger',
+    'Sao Tome and Principe', 'Seychelles', 'Sierra Leone', 'Somalia', 'South Sudan',
+    'Sudan', 'Togo'
+  ];
+  const africanLocationQuery = AFRICAN_COUNTRIES.map(country => `"${country}"`).join(' OR ');
   const responseCache = new Map();
   const nativeFetch = window.fetch.bind(window);
 
@@ -16,17 +28,20 @@
     }
 
     const params = requestUrl.searchParams;
-    // app.js requests 12 records; do not inflate this to 100, which made searches slower.
     params.set('pageSize', '12');
     params.set('filter.overallStatus', 'RECRUITING');
 
+    // Use the selected country, or search African country locations directly so
+    // the first page isn't wasted on unrelated studies from other regions.
     const country = document.querySelector('#country-select')?.value?.trim();
     if (country) {
-      params.set('query.locn', country);
+      params.set('query.locn', `"${country}"`);
       const term = params.get('query.term') || '*';
       const escapedCountry = country.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const withoutCountry = term.replace(new RegExp(`\\s+AND\\s+${escapedCountry}$`, 'i'), '').trim();
       params.set('query.term', withoutCountry || '*');
+    } else {
+      params.set('query.locn', africanLocationQuery);
     }
 
     const url = requestUrl.toString();
@@ -39,7 +54,7 @@
     return nativeFetch(url, options).then(response => {
       if (response.ok && !signal?.aborted) {
         responseCache.set(url, { savedAt: Date.now(), response: response.clone() });
-        if (responseCache.size > 20) responseCache.delete(responseCache.keys().next().value);
+        if (responseCache.size > 40) responseCache.delete(responseCache.keys().next().value);
       }
       return response;
     });
