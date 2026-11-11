@@ -14,7 +14,7 @@ const AFRICAN_COUNTRIES = [
 
 const provinceOptions = {
   'South Africa': ['Eastern Cape', 'Free State', 'Gauteng', 'KwaZulu-Natal', 'Limpopo', 'Mpumalanga', 'North West', 'Northern Cape', 'Western Cape'],
-  'Nigeria': ['Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno', 'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'Gombe', 'Imo', 'Jigawa', 'Kaduna', 'Kano'],
+  'Nigeria': ['Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno', 'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'Gombe', 'Imo', 'Jigawa', 'Kaduna', 'Kano', 'Katsina', 'Kebbi', 'Kogi', 'Kwara', 'Lagos', 'Nasarawa', 'Niger', 'Ogun', 'Ondo', 'Osun', 'Oyo', 'Plateau', 'Rivers', 'Sokoto', 'Taraba', 'Yobe', 'Zamfara', 'Federal Capital Territory'],
   'Kenya': ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Kajiado', 'Kiambu', 'Machakos', 'Uasin Gishu', 'Kakamega', 'Meru'],
   'Uganda': ['Central', 'Eastern', 'Western', 'Northern'],
   'Ethiopia': ['Addis Ababa', 'Amhara', 'Oromia', 'Somali', 'Tigray', 'Afar', 'SNNPR', 'Harari', 'Dire Dawa'],
@@ -64,7 +64,7 @@ let requestController = null;
 let searchSequence = 0;
 
 const excludedStudyStatuses = new Set(['COMPLETED', 'SUSPENDED']);
-const escapeHTML = (value = '') => String(value).replace(/[&<>\'\"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
+const escapeHTML = (value = '') => String(value).replace(/[&<>\'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
 const formatStatus = status => (status || 'Unknown').toLowerCase().replaceAll('_', ' ');
 const normalizeCountry = value => (value || '').trim().replace(/\s+/g, ' ').toLowerCase();
 const normalizeLocationValue = value => (value || '').trim().replace(/\s+/g, ' ').toLowerCase();
@@ -182,7 +182,7 @@ function trialCard(study) {
           sitePhone ? `<a href="tel:${escapeHTML(sitePhone.replace(/[^\d+]/g, ''))}">${escapeHTML(sitePhone)}</a>` : '',
           siteEmail ? `<a href="mailto:${escapeHTML(siteEmail)}">${escapeHTML(siteEmail)}</a>` : ''
         ].filter(Boolean).join(' · ');
-        return `<li><span class="site-location">${escapeHTML(address)}</span>${contactMarkup ? `<span class="site-contact">${contactMarkup}</span>` : '<span class="site-contact">Contact details not provided in the registry</span>'}</li>`;
+        return `<li><span class="site-location">${escapeHTML(address)}</span>${contactMarkup ? `<span class="site-contact">${contactMarkup}</span>` : '<span class="site-contact">Contact details not listed.</span>'}</li>`;
       }).join('')
     : '<li><span class="site-location">African study sites are not listed in the registry.</span><span class="site-contact">Open the official trial record for the latest site updates.</span></li>';
 
@@ -326,7 +326,7 @@ document.querySelectorAll('[data-query]').forEach(button => button.addEventListe
   runSearch(button.dataset.query);
 }));
 
-pactrButton.addEventListener('click', () => window.open(PACTR_URL, '_blank', 'noopener,noreferrer'));
+pactrButton?.addEventListener('click', () => window.open(PACTR_URL, '_blank', 'noopener,noreferrer'));
 loadMore.addEventListener('click', () => searchTrials({ append: true }));
 sortSelect.addEventListener('change', () => {
   nextPageToken = '';
