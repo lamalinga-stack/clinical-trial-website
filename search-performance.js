@@ -1,9 +1,8 @@
-// Standalone search-performance helper; dashboard.js contains the same active
-// fetch optimization for pages where this helper is not separately loaded.
+// Standalone helper mirrors the active search optimization in dashboard.js.
 (() => {
   const API_HOST = 'clinicaltrials.gov';
   const CACHE_TTL_MS = 120_000;
-  const PAGE_SIZE = 8;
+  const PAGE_SIZE = 50;
   const AFRICAN_COUNTRIES = [
     'South Africa', 'Nigeria', 'Kenya', 'Uganda', 'Ethiopia', 'Ghana', 'Tanzania',
     'Cameroon', 'Senegal', 'Zambia', 'Zimbabwe', 'Mozambique', 'Rwanda', 'Malawi',
@@ -15,7 +14,7 @@
     'Sao Tome and Principe', 'Seychelles', 'Sierra Leone', 'Somalia', 'South Sudan',
     'Sudan', 'Togo'
   ];
-  const africanLocationQuery = AFRICAN_COUNTRIES.map(country => `"${country}"`).join(' OR ');
+  const africanLocationQuery = `(${AFRICAN_COUNTRIES.map(country => `"${country}"`).join(' OR ')})`;
   const responseCache = new Map();
   const nativeFetch = window.fetch.bind(window);
 

@@ -1,10 +1,11 @@
-// Apply API-side recruiting/location filters, request a compact result page, and
-// cache repeat searches. Bound slow registry responses so the UI never waits 30s.
+// Apply API-side recruiting/location filters, request enough candidates for the
+// client-side African-location check, and cache repeat searches. A timeout keeps
+// stalled registry requests from leaving the results area loading indefinitely.
 (() => {
   const API_HOST = 'clinicaltrials.gov';
   const CACHE_TTL_MS = 120_000;
   const REQUEST_TIMEOUT_MS = 25_000;
-  const PAGE_SIZE = 8; // Return enough candidates to show at least 4 matching trials when available.
+  const PAGE_SIZE = 50;
   const AFRICAN_COUNTRIES = [
     'South Africa', 'Nigeria', 'Kenya', 'Uganda', 'Ethiopia', 'Ghana', 'Tanzania',
     'Cameroon', 'Senegal', 'Zambia', 'Zimbabwe', 'Mozambique', 'Rwanda', 'Malawi',
@@ -16,7 +17,7 @@
     'Sao Tome and Principe', 'Seychelles', 'Sierra Leone', 'Somalia', 'South Sudan',
     'Sudan', 'Togo'
   ];
-  const africanLocationQuery = AFRICAN_COUNTRIES.map(country => `"${country}"`).join(' OR ');
+  const africanLocationQuery = `(${AFRICAN_COUNTRIES.map(country => `"${country}"`).join(' OR ')})`;
   const responseCache = new Map();
   const nativeFetch = window.fetch.bind(window);
 
@@ -74,7 +75,7 @@
         const results = document.querySelector('#results');
         if (results) results.innerHTML = '';
         if (status) {
-          status.textContent = 'Search took too long to reach the trial registry. Please try again.';
+          status.textContent = 'The trial registry took too long to respond. Please try your search again.';
           status.hidden = false;
         }
         if (resultCount) resultCount.textContent = 'Search timed out';
@@ -87,7 +88,7 @@
   };
 })();
 
-// Public Power BI report URL for the Africa research dashboard.
+// Correct public Power BI report URL supplied for the Africa research dashboard.
 const AFRICA_DASHBOARD_URL = 'https://app.powerbi.com/view?r=eyJrIjoiMTQ0MGYxNTktOTQ4Zi00NzBmLWFhYzEtY2QzM2FkNGFlIiwidCI6ImYxOTMwYmZmLTliNTEtNGQwYy1iMmJkLWMyNmE5ZTBmNDYwMCIsImMiOjh9';
 
 // Keep the report collapsed until requested, while preserving social media feeds.
