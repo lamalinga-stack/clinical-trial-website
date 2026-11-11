@@ -9,6 +9,15 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/api/translate",
+        "function": {
+          "functionId": "translateWithVulavula",
+          "region": "us-central1"
+        }
+      }
     ]
   },
   "functions": {
