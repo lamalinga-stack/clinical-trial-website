@@ -1,8 +1,9 @@
-// Restrict ClinicalTrials.gov searches to African locations at the API, rather than
-// downloading unrelated recruiting studies and discarding them in the browser.
+// Standalone search-performance helper; dashboard.js contains the same active
+// fetch optimization for pages where this helper is not separately loaded.
 (() => {
   const API_HOST = 'clinicaltrials.gov';
   const CACHE_TTL_MS = 120_000;
+  const PAGE_SIZE = 8;
   const AFRICAN_COUNTRIES = [
     'South Africa', 'Nigeria', 'Kenya', 'Uganda', 'Ethiopia', 'Ghana', 'Tanzania',
     'Cameroon', 'Senegal', 'Zambia', 'Zimbabwe', 'Mozambique', 'Rwanda', 'Malawi',
@@ -22,15 +23,13 @@
     const requestUrl = typeof resource === 'string' || resource instanceof URL
       ? new URL(resource.toString(), window.location.href)
       : new URL(resource.url);
-
     if (requestUrl.hostname !== API_HOST || !requestUrl.pathname.endsWith('/api/v2/studies')) {
       return nativeFetch(resource, options);
     }
 
     const params = requestUrl.searchParams;
-    params.set('pageSize', '12');
+    params.set('pageSize', String(PAGE_SIZE));
     params.set('filter.overallStatus', 'RECRUITING');
-
     const country = document.querySelector('#country-select')?.value?.trim();
     if (country) {
       params.set('query.locn', `"${country}"`);
@@ -48,7 +47,6 @@
     if (cached && Date.now() - cached.savedAt < CACHE_TTL_MS && !signal?.aborted) {
       return Promise.resolve(cached.response.clone());
     }
-
     return nativeFetch(url, options).then(response => {
       if (response.ok && !signal?.aborted) {
         responseCache.set(url, { savedAt: Date.now(), response: response.clone() });

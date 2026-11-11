@@ -1,9 +1,10 @@
-// Apply search optimizations before app.js runs (dashboard.js is loaded first).
-// This also keeps the standalone search-performance.js behavior in sync even if
-// the page's script list does not include that file.
+// Apply API-side recruiting/location filters, request a compact result page, and
+// cache repeat searches. Bound slow registry responses so the UI never waits 30s.
 (() => {
   const API_HOST = 'clinicaltrials.gov';
   const CACHE_TTL_MS = 120_000;
+  const REQUEST_TIMEOUT_MS = 25_000;
+  const PAGE_SIZE = 8; // Return enough candidates to show at least 4 matching trials when available.
   const AFRICAN_COUNTRIES = [
     'South Africa', 'Nigeria', 'Kenya', 'Uganda', 'Ethiopia', 'Ghana', 'Tanzania',
     'Cameroon', 'Senegal', 'Zambia', 'Zimbabwe', 'Mozambique', 'Rwanda', 'Malawi',
@@ -29,7 +30,7 @@
     }
 
     const params = requestUrl.searchParams;
-    params.set('pageSize', '12');
+    params.set('pageSize', String(PAGE_SIZE));
     params.set('filter.overallStatus', 'RECRUITING');
 
     const country = document.querySelector('#country-select')?.value?.trim();
@@ -44,18 +45,44 @@
     }
 
     const url = requestUrl.toString();
-    const signal = options.signal || (resource instanceof Request ? resource.signal : undefined);
+    const externalSignal = options.signal || (resource instanceof Request ? resource.signal : undefined);
     const cached = responseCache.get(url);
-    if (cached && Date.now() - cached.savedAt < CACHE_TTL_MS && !signal?.aborted) {
+    if (cached && Date.now() - cached.savedAt < CACHE_TTL_MS && !externalSignal?.aborted) {
       return Promise.resolve(cached.response.clone());
     }
 
-    return nativeFetch(url, options).then(response => {
-      if (response.ok && !signal?.aborted) {
+    const controller = new AbortController();
+    let timedOut = false;
+    const abortFromCaller = () => controller.abort(externalSignal.reason);
+    if (externalSignal?.aborted) abortFromCaller();
+    else externalSignal?.addEventListener('abort', abortFromCaller, { once: true });
+    const timeoutId = window.setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, REQUEST_TIMEOUT_MS);
+
+    return nativeFetch(url, { ...options, signal: controller.signal }).then(response => {
+      if (response.ok && !controller.signal.aborted) {
         responseCache.set(url, { savedAt: Date.now(), response: response.clone() });
         if (responseCache.size > 40) responseCache.delete(responseCache.keys().next().value);
       }
       return response;
+    }).catch(error => {
+      if (timedOut && !externalSignal?.aborted) {
+        const status = document.querySelector('#status-message');
+        const resultCount = document.querySelector('#result-count');
+        const results = document.querySelector('#results');
+        if (results) results.innerHTML = '';
+        if (status) {
+          status.textContent = 'Search took too long to reach the trial registry. Please try again.';
+          status.hidden = false;
+        }
+        if (resultCount) resultCount.textContent = 'Search timed out';
+      }
+      throw error;
+    }).finally(() => {
+      window.clearTimeout(timeoutId);
+      externalSignal?.removeEventListener('abort', abortFromCaller);
     });
   };
 })();
