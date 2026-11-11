@@ -1,10 +1,48 @@
-// Correct public Power BI report URL supplied for the Africa research dashboard.
+// Public Power BI report URL for the Africa research dashboard.
 const AFRICA_DASHBOARD_URL = 'https://app.powerbi.com/view?r=eyJrIjoiMTQ0MGYxNTktOTQ4Zi00NzBmLWFhYzEtY2QzM2FkNGFlIiwidCI6ImYxOTMwYmZmLTliNTEtNGQwYy1iMmJkLWMyNmE5ZTBmNDYwMCIsImMiOjh9';
 
-// Restore the social media embeds while keeping the dashboard link behavior.
+// Keep the report collapsed until requested, while preserving social media feeds.
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('iframe.powerbi-dashboard').forEach(frame => {
-    frame.src = AFRICA_DASHBOARD_URL;
+  document.querySelectorAll('.dashboard-section').forEach((section, index) => {
+    const frameWrap = section.querySelector('.dashboard-frame-wrap');
+    const frame = section.querySelector('iframe.powerbi-dashboard');
+    if (!frameWrap || !frame) return;
+
+    // Delay loading the large Power BI embed until the visitor chooses to show it.
+    const dashboardUrl = frame.getAttribute('src') || AFRICA_DASHBOARD_URL;
+    frame.dataset.dashboardSrc = AFRICA_DASHBOARD_URL || dashboardUrl;
+    frame.removeAttribute('src');
+    frameWrap.hidden = true;
+
+    const controls = document.createElement('div');
+    controls.className = 'dashboard-controls';
+
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'dashboard-toggle';
+    toggle.textContent = 'Show dashboard';
+    toggle.setAttribute('aria-expanded', 'false');
+    const frameId = frame.id || `africa-dashboard-${index + 1}`;
+    frame.id = frameId;
+    toggle.setAttribute('aria-controls', frameId);
+    toggle.addEventListener('click', () => {
+      const expanded = toggle.getAttribute('aria-expanded') === 'true';
+      const show = !expanded;
+      toggle.setAttribute('aria-expanded', String(show));
+      toggle.textContent = show ? 'Hide dashboard' : 'Show dashboard';
+      frameWrap.hidden = !show;
+      if (show && !frame.src) frame.src = frame.dataset.dashboardSrc;
+    });
+
+    const link = document.createElement('a');
+    link.className = 'dashboard-open-link';
+    link.href = AFRICA_DASHBOARD_URL;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = 'Open dashboard in Power BI';
+
+    controls.append(toggle, link);
+    frameWrap.before(controls);
   });
 
   document.querySelectorAll('a[href*="app.powerbi.com/view"]').forEach(link => {
@@ -34,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     </div>`;
 
-  // Twitter's widget script may have loaded before the timeline was inserted.
   if (window.twttr?.widgets?.load) {
     window.twttr.widgets.load(feeds);
   } else if (!document.querySelector('script[data-twitter-widgets]')) {
